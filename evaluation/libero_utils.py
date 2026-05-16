@@ -1,4 +1,4 @@
-from config.constants_new import NUM_ACTIONS_CHUNK
+from config.config_vla import NUM_ACTIONS_CHUNK
 from utils.ignore_warning import ignore_warnings
 ignore_warnings()
 
@@ -24,7 +24,7 @@ import wandb
 import tensorflow as tf
 import math
 
-from VLAMiniCodes.models.vla_model import OpenVLAOFTConfig, OpenVLAOFTForVision2Seq
+from models.vla_model import MIRTHConfig, MIRTH
 
 
 def get_libero_env(task, resolution=256):

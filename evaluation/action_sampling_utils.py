@@ -24,9 +24,9 @@ from PIL import Image
 import tensorflow as tf
 import math
 
-from config.constants_new import ACTION_PROPRIO_NORMALIZATION_TYPE, NormalizationType, NUM_ACTIONS_CHUNK
-from config.constants_new import SINGLE_ACTION_TOKEN_INDEX, SINGLE_ACTION_CHUNK_TOKEN_INDEX, ACTION_REASON_TOKEN_BEGIN_IDX, ACTION_DIM, IGNORE_INDEX, PROPRIO_DIM
-from VLAMiniCodes.models.vla_model import OpenVLAOFTConfig, OpenVLAOFTForVision2Seq
+from config.config_vla import ACTION_PROPRIO_NORMALIZATION_TYPE, NormalizationType, NUM_ACTIONS_CHUNK
+from config.config_vla import SINGLE_ACTION_TOKEN_INDEX, SINGLE_ACTION_CHUNK_TOKEN_INDEX, ACTION_REASON_TOKEN_BEGIN_IDX, ACTION_DIM, IGNORE_INDEX, PROPRIO_DIM
+from models.vla_model import MIRTHConfig, MIRTH
 
 OPENVLA_IMAGE_SIZE = 224  # Standard image size expected by OpenVLA
 
@@ -296,7 +296,7 @@ def normalize_proprio(proprio: np.ndarray, norm_stats: Dict[str, Any]) -> np.nda
 
 def get_vla_action(
     cfg,
-    model: OpenVLAOFTForVision2Seq,
+    model: MIRTH,
     obs: Dict[str, Any],
     task_label: str,
     prompt_builder,
@@ -371,7 +371,7 @@ def get_vla_action(
 
         dummy_current_action = torch.zeros(size=(1, ACTION_DIM))
         dummy_current_action_chunk = torch.zeros(size=(1, NUM_ACTIONS_CHUNK, ACTION_DIM))
-        action, normalized_actions = model.predict_action(
+        action, normalized_actions, x_embeddings, r_embeddings, a_embeddings = model.predict_action(
             input_ids=input_ids,
             attention_mask=attention_mask,
             labels=labels,

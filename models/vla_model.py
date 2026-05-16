@@ -87,8 +87,7 @@ class MIRTH(nn.Module):
         self.vision_backbone, self.image_transform = get_Prism_7B_DINOSigLIP_224px_backbone_and_transform()
         overwatch.info(f"Loading Pretrained LLM...")
         # It would be much faster with use_flash_attention_2=True. But this requires to compile flash attention on your own machine.
-        # So we set it to False by default for better compatibility, albeit with increased VRAM usage and slower training speed.
-        self.llm_backbone, self.tokenizer = get_Prism_7B_DINOSigLIP_224px_backbone_llama2_and_tokenizer(hf_token=self.config.hf_token, use_flash_attention_2=False, load_pretrained=True)
+        self.llm_backbone, self.tokenizer = get_Prism_7B_DINOSigLIP_224px_backbone_llama2_and_tokenizer(hf_token=self.config.hf_token, use_flash_attention_2=True, load_pretrained=True)
         self.projector = FusedMLPProjector(self.vision_backbone.embed_dim, self.llm_backbone.embed_dim)
         self.vlm_config = self.llm_backbone.config
         
@@ -664,7 +663,6 @@ class MIRTH(nn.Module):
             proprio=proprio.to(torch.bfloat16),
             proprio_history=proprio_history.to(torch.bfloat16),
             pad_mask=pad_mask,
-            return_dict=True,
         )
         predicted_actions = outputs.actions
         
@@ -672,4 +670,6 @@ class MIRTH(nn.Module):
         predicted_actions = np.clip(predicted_actions, -1.0, 1.0)
         actions = self._unnormalize_actions(predicted_actions, unnorm_key)
         
-        return actions, predicted_actions, outputs.x_embeddings.cpu(), outputs.r_embeddings.cpu(), outputs.a_embeddings.cpu()
+        if outputs.x_embeddings is not None and outputs.r_embeddings is not None and outputs.a_embeddings is not None:
+            return actions, predicted_actions, outputs.x_embeddings.cpu(), outputs.r_embeddings.cpu(), outputs.a_embeddings.cpu()
+        return actions, predicted_actions, None, None, None

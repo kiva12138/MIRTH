@@ -4,7 +4,7 @@ ignore_warnings()
 import json
 import logging
 import os
-os.environ["MUJOCO_GL"] = "osmesa" # MuJoCo 在 Linux 下支持三种后端：glfw（有窗口）、egl（GPU 无窗口）、osmesa（CPU 无窗口）。这一步强制选用 CPU 的 OSMesa 后端，避免一些服务器没有 GPU 导致的渲染错误。
+os.environ["MUJOCO_GL"] = "osmesa" # glfw(windowed) egl(GPU no-window) osmesa(CPU no-window)
 import draccus
 from dataclasses import dataclass
 import random
@@ -20,7 +20,7 @@ import wandb
 from libero.libero import benchmark
 from peft import LoraConfig, get_peft_model
 
-from config.constants_new import ACTION_DIM, NUM_ACTIONS_CHUNK, PROPRIO_DIM
+from config.config_vla import ACTION_DIM, NUM_ACTIONS_CHUNK, PROPRIO_DIM
 from evaluation.action_sampling_utils import (
     get_vla_action,
     normalize_proprio,
@@ -29,7 +29,7 @@ from evaluation.action_sampling_utils import (
 )
 from evaluation.libero_utils import get_libero_env, prepare_observation
 from finetune_ddp import RunConfig
-from VLAMiniCodes.models.vla_model import OpenVLAOFTConfig, OpenVLAOFTForVision2Seq
+from models.vla_model import MIRTH, MIRTHConfig
 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
@@ -39,9 +39,9 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class EvalConfig(RunConfig):
-    pretrained_vla_path: str             = "/path/to/openvla-7b-prismatic/checkpoints/step-295000-epoch-40-loss=0.2200.pt"                            # Path to initiate model weights
-    pretrained_checkpoint_path: str      = "/path/to/MemoryHubRunning/MBPrefixUnion_libero_object_1T1A_VPHub_RToken_6000Prox2/checkpoints/"           # Path to fine-tuned model checkpoint
-    pretrained_checkpoint_step: int      = 10000                                                                                     # Steps of the checkpoint to load
+    pretrained_vla_path: str             = "/mnt/data1/OpenVLA/openvla-7b-prismatic/checkpoints/step-295000-epoch-40-loss=0.2200.pt" # Path to initiate model weights
+    pretrained_checkpoint_path: str      = "/media/sunhao/T7/MemoryHubRunning/MBPrefixUnion_libero_goal_1T1A_VPHub_RToken_A6000x3/checkpoints/"      # Path to fine-tuned model checkpoint
+    pretrained_checkpoint_step: int      = 30000                                                                                     # Steps of the checkpoint to load
 
     task_suite_name: str                 = None                       # Task suite to eval on
     device: int                          = 0
@@ -103,6 +103,14 @@ def get_configs_from_pretrained(config: EvalConfig):
             continue
         setattr(config, key, value)
         
+    if config.use_original_action_tokens:
+        config.action_token_type = "one_for_action_dim"    
+    else:
+        if config.one_token_for_action_chunk:
+            config.action_token_type = "one_for_action_chunk"
+        else:
+            config.action_token_type = "one_for_action_step"
+    
     if "_all_" in config.pretrained_checkpoint_path:
         assert config.task_suite_name is not None, "Please specify task_suite_name for _all_ checkpoints."
         if config.task_suite_name == "libero_object":
@@ -140,18 +148,16 @@ def get_configs_from_pretrained(config: EvalConfig):
 
 
 def initialize_model(config: EvalConfig, log_file):
-    model_config = OpenVLAOFTConfig(
+    model_config = MIRTHConfig(
         pretrained_vla_path=config.pretrained_vla_path,
         num_images_in_input=config.num_images_in_input,
         use_proprio=config.use_proprio,
         hf_token=config.hf_token,
-        one_token_for_action_chunk=config.one_token_for_action_chunk,
+        action_token_type=config.action_token_type,
         mb_prefix_type = config.mb_prefix_type,
         use_vision_memory_hub=config.use_vision_memory_hub,
-        vision_infusion_ratio=config.vision_infusion_ratio,
         use_proprio_memory_hub=config.use_proprio_memory_hub,
         use_action_memory_hub=config.use_action_memory_hub,
-        use_original_action_tokens=config.use_original_action_tokens,
         long_memory_scale_number=config.long_memory_scale_number,
         short_memory_length=config.short_memory_length,
         tau=config.tau,
@@ -173,7 +179,7 @@ def initialize_model(config: EvalConfig, log_file):
         lambda_contrastive_ra = config.lambda_contrastive_ra,
         lambda_contrastive_rx = config.lambda_contrastive_rx,
     )
-    model = OpenVLAOFTForVision2Seq(model_config)
+    model = MIRTH(model_config)
     if config.use_lora:
         lora_config = LoraConfig(
             r=config.lora_rank,

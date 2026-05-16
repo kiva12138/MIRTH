@@ -32,13 +32,21 @@ from peft import LoraConfig, get_peft_model
 overwatch = initialize_overwatch(__name__)
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
+# If you cannnot use flash attention, please set the following flags to disable flash attention and enable math-based sdp
+# But this is much slower, so it's recommended to resolve flash attention issues (e.g., by updating PyTorch and CUDA) rather than disabling it!
+# torch.backends.cuda.enable_mem_efficient_sdp(False)
+# torch.backends.cuda.enable_cudnn_sdp(True)
+# torch.backends.cuda.enable_flash_sdp(True)
+# torch.backends.cuda.enable_math_sdp(True)
+
+
 @dataclass
 class RunConfig:
     # Path related
     pretrained_vla_path: str             = "/mnt/data1/OpenVLA/openvla-7b-prismatic/checkpoints/step-295000-epoch-40-loss=0.2200.pt"
-    hf_token: str                        = "/path/to/hf_token"                             # Hugging Face token path
-    data_root_dir: str                   = "/path/to/LIBERO/modified_libero_rlds/"         # Directory containing RLDS datasets
-    run_dir: str                         = "/path/to/MemoryHubRunning"                     # Directory to store logs & checkpoints
+    hf_token: str                        = "/home/sunhao/MachineLearning/hf_token"         # Hugging Face token path
+    data_root_dir: str                   = "/media/sunhao/T7/LIBERO/modified_libero_rlds/" # Directory containing RLDS datasets
+    run_dir: str                         = "/media/sunhao/T7/MemoryHubRunning"             # Directory to store logs & checkpoints
     dataset_name: str                    = "libero_goal_no_noops"                          # Name of fine-tuning dataset
     run_id: str                          = "MBPrefixUnion_libero_goal_1T1A_VPHub_RToken_A6000x3"
     
@@ -168,7 +176,6 @@ class DDPStrategy:
                         proprio=batch["proprio"],
                         proprio_history=batch["proprio_history"],
                         pad_mask=batch["pad_mask"],
-                        debug=False
                     )
                     loss = output.loss
                     metrics_return = output.metrics
