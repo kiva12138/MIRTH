@@ -103,13 +103,14 @@ def get_configs_from_pretrained(config: EvalConfig):
             continue
         setattr(config, key, value)
         
-    if config.use_original_action_tokens:
-        config.action_token_type = "one_for_action_dim"    
-    else:
-        if config.one_token_for_action_chunk:
-            config.action_token_type = "one_for_action_chunk"
+    if hasattr(config, "use_original_action_tokens"):
+        if config.use_original_action_tokens:
+            config.action_token_type = "one_for_action_dim"    
         else:
-            config.action_token_type = "one_for_action_step"
+            if config.one_token_for_action_chunk:
+                config.action_token_type = "one_for_action_chunk"
+            else:
+                config.action_token_type = "one_for_action_step"
     
     if "_all_" in config.pretrained_checkpoint_path:
         assert config.task_suite_name is not None, "Please specify task_suite_name for _all_ checkpoints."
