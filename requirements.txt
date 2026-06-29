@@ -141,7 +141,7 @@ stack-data==0.6.3
 sympy==1.14.0
 tensorboard==2.20.0
 tensorboard-data-server==0.7.2
-tensorflow==2.20.0
+tensorflow==2.15.0
 tensorflow-datasets==4.9.9
 tensorflow-graphics==2020.5.20
 tensorflow-metadata==1.17.2
