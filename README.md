@@ -21,9 +21,12 @@ conda activate mirth
 
 ```bash
 pip install -r requirements.txt
+pip install --no-deps "dlimp @ https://codeload.github.com/moojink/dlimp_openvla/zip/refs/heads/main#sha256=e3140251551630c58fe935ef553bdad7e856bb028e8721155d00da714045f665"
 ```
 
 The pinned versions in [requirements.txt](requirements.txt) include `torch==2.9.1+cu130`, `torchvision==0.24.1+cu130`, `transformers==4.57.3`, `tensorflow==2.20.0`, `tensorflow-datasets==4.9.9`, and `peft==0.18.0`. The file includes the PyTorch CUDA 13.0 wheel index. Make sure your CUDA driver supports CUDA 13. If you must stay on an older CUDA, install the matching `torch` / `torchvision` wheels first, then run the rest of `requirements.txt`.
+
+`dlimp` is installed separately with `--no-deps` because its package metadata pins `tensorflow==2.15.0`, which is not available for Python 3.13. MIRTH uses the TensorFlow 2.20 stack pinned above.
 
 LIBERO is installed as an editable git package from `requirements.txt`. If the editable install fails on your machine, install it manually:
 
