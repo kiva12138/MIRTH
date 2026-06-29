@@ -43,7 +43,16 @@ We strongly recommend installing [`flash-attn`](https://github.com/Dao-AILab/fla
 pip install flash_attn==2.8.3 --no-build-isolation
 ```
 
-If the prebuilt wheel is unavailable for your platform, you may need to build from source (this typically requires the matching CUDA toolkit and a recent `nvcc`).
+If the prebuilt wheel is unavailable for your platform, pip will try to build `flash-attn` from source. This requires a full CUDA Toolkit installation, not just the PyTorch CUDA wheel. Before building, `nvcc --version` must work and `CUDA_HOME` / `CUDA_PATH` must point to the CUDA install root. On Windows, source builds are especially fragile; if you do not already have a working CUDA compiler toolchain, use the SDPA fallback below.
+
+On Windows, a CUDA Toolkit install usually looks like:
+
+```powershell
+setx CUDA_HOME "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v13.0"
+setx CUDA_PATH "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v13.0"
+```
+
+Restart the shell after setting these variables, then check `nvcc --version`.
 
 **If you cannot install `flash_attn`**, you need to fall back to PyTorch's SDPA / math kernels:
 
