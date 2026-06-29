@@ -25,7 +25,7 @@ draccus==0.11.5
 easydict==1.13
 einops==0.8.1
 etils==1.13.0
-evdev==1.9.3
+evdev==1.9.3; platform_system == "Linux"
 executing==2.2.1
 fastjsonschema==2.21.2
 filelock==3.20.0
@@ -117,7 +117,7 @@ PyOpenGL==3.1.10
 pyparsing==3.3.1
 pytest==9.0.3
 python-dateutil==2.9.0.post0
-python-xlib==0.33
+python-xlib==0.33; platform_system == "Linux"
 PyYAML==6.0.3
 pyyaml-include==1.4.1
 pyzmq==27.1.0
