@@ -134,6 +134,7 @@ class LeRobotDataConfig:
     action_dim: int = ACTION_DIM
     proprio_dim: int = PROPRIO_DIM
     download_videos: bool = False
+    video_backend: str | None = "pyav"
 
     def __post_init__(self) -> None:
         if self.history_window_size < 1:
@@ -258,6 +259,7 @@ class LeRobotOpenVLADataset(Dataset):
             config.repo_id,
             root=root,
             download_videos=config.download_videos,
+            video_backend=config.video_backend,
         )
         return dataset, _tasks_to_mapping(getattr(meta, "tasks", {}))
 
