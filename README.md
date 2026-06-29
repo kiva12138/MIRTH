@@ -89,7 +89,18 @@ If all five pass, your environment is ready for fine-tuning.
 
 ## 3. Fine-tuning
 
-### 3.1 Configure paths and hyperparameters
+### 3.1 Supported data formats
+
+MIRTH supports two dataset formats:
+
+| Format | Loader | Download link |
+| --- | --- | --- |
+| RLDS / TFDS format | `rlds_datasets.RLDSDataset` | TBD |
+| LeRobot format | `lerobot_datasets.LeRobotOpenVLADataset` | TBD |
+
+Both loaders adapt samples to the same OpenVLA-style batch contract before collation, so they can share `PaddedCollatorForActionPrediction`.
+
+### 3.2 Configure paths and hyperparameters
 
 All training options live in the `RunConfig` dataclass at the top of [finetune_ddp.py](finetune_ddp.py). Before launching, edit at least the following fields to match your environment:
 
@@ -97,7 +108,7 @@ All training options live in the `RunConfig` dataclass at the top of [finetune_d
 | --- | --- |
 | `pretrained_vla_path` | Path to the pretrained OpenVLA-7B (Prismatic) checkpoint `.pt` file |
 | `hf_token` | Path to a file containing your Hugging Face access token |
-| `data_root_dir` | Directory containing the RLDS-format LIBERO datasets |
+| `data_root_dir` | Directory containing the training datasets; use the RLDS / TFDS root for `RLDSDataset`, or the LeRobot root for `LeRobotOpenVLADataset` |
 | `run_dir` | Where logs and checkpoints will be written |
 | `dataset_name` | RLDS mixture name, e.g. `libero_goal_no_noops`, `libero_object_no_noops`, `libero_spatial_no_noops`, `libero_10_no_noops` |
 | `run_id` | A unique identifier for this run (used as the checkpoint subdirectory) |
@@ -111,7 +122,7 @@ Other commonly tuned fields:
 - **LoRA**: `use_lora`, `lora_rank`, `lora_dropout`.
 - **Stage**: `stage` controls which backbones are frozen (`lvp` = freeze LLM + vision + projector backbones, `lv` = freeze LLM + vision).
 
-### 3.2 Launch DDP training
+### 3.3 Launch DDP training
 
 A typical 3-GPU launch (matching the comment at the top of [finetune_ddp.py](finetune_ddp.py#L1-L4)):
 
