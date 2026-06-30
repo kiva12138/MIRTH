@@ -9,7 +9,10 @@ By default the script scans a LeRobot root that contains many task folders and
 writes one RLDS dataset per task. Dataset names are generated from folder names,
 for example:
     "Place the banana in the plate on the right"
-        -> "place_the_banana_in_the_plate_on_the_right"
+        -> "task1"
+
+The original task name to task id mapping is saved in task_metadata.json under
+the output root.
 """
 
 from __future__ import annotations
@@ -34,6 +37,7 @@ DEFAULT_RLDS_ROOT = Path(r"E:\RLDS_DATA")
 @dataclass(frozen=True)
 class LeRobotSource:
     name: str
+    original_name: str
     path: Path
 
 
@@ -47,29 +51,56 @@ def builder_class_name(dataset_name: str) -> str:
     stem = "".join(part[:1].upper() + part[1:] for part in parts)
     if not stem or not stem[0].isalpha():
         stem = f"Dataset{stem}"
-    return f"{stem}RldsBuilder"
+    return stem
 
 
 def find_lerobot_datasets(root: Path) -> list[LeRobotSource]:
     if (root / "data").is_dir() and (root / "meta").is_dir():
-        return [LeRobotSource(slugify(root.name), root)]
+        return [LeRobotSource(slugify(root.name), root.name, root)]
 
     found: list[LeRobotSource] = []
     for meta_dir in sorted(root.rglob("meta")):
         dataset_dir = meta_dir.parent
         if (dataset_dir / "data").is_dir():
-            found.append(LeRobotSource(slugify(dataset_dir.name), dataset_dir))
+            found.append(LeRobotSource(slugify(dataset_dir.name), dataset_dir.name, dataset_dir))
 
-    # Preserve first occurrence if duplicate task names exist under different categories.
-    unique: dict[str, LeRobotSource] = {}
-    for source in found:
-        if source.name in unique:
-            raise ValueError(
-                f"Duplicate dataset name {source.name!r}: {unique[source.name].path} and {source.path}. "
-                "Use --single-dataset on one folder or rename one output dataset."
-            )
-        unique[source.name] = source
-    return list(unique.values())
+    return found
+
+
+def assign_task_ids(sources: Iterable[LeRobotSource]) -> list[LeRobotSource]:
+    return [
+        LeRobotSource(f"task{i}", source.original_name, source.path)
+        for i, source in enumerate(sources, start=1)
+    ]
+
+
+def write_task_metadata(sources: Iterable[LeRobotSource], args) -> Path:
+    sources = list(sources)
+    task_name_to_dataset_names: dict[str, list[str]] = {}
+    for source in sources:
+        task_name_to_dataset_names.setdefault(source.original_name, []).append(source.name)
+
+    metadata = {
+        "version": args.version,
+        "output_root": str(args.output_root),
+        "dataset_name_to_task_name": {
+            source.name: source.original_name for source in sources
+        },
+        "tasks": [
+            {
+                "dataset_name": source.name,
+                "task_name": source.original_name,
+                "source_path": str(source.path),
+            }
+            for source in sources
+        ],
+        "task_name_to_dataset_names": task_name_to_dataset_names,
+    }
+    metadata_path = args.output_root / args.metadata_file
+    with metadata_path.open("w", encoding="utf-8") as f:
+        json.dump(metadata, f, ensure_ascii=False, indent=2)
+        f.write("\n")
+    return metadata_path
 
 
 def import_lerobot():
@@ -377,7 +408,7 @@ def dry_run(sources: Iterable[LeRobotSource], args) -> None:
         info = read_info(source.path)
         action_dim, state_dim, primary_image_shape, wrist_image_shape = infer_shapes(source, args)
         print(
-            f"{source.name}: path={source.path}, "
+            f"{source.name}: task_name={source.original_name}, path={source.path}, "
             f"episodes={info.get('total_episodes')}, frames={info.get('total_frames')}, "
             f"action_dim={action_dim}, state_dim={state_dim}, "
             f"primary_image_shape={primary_image_shape}, wrist_image_shape={wrist_image_shape}"
@@ -401,6 +432,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--default-prompt", default=None)
     parser.add_argument("--jpeg-quality", type=int, default=95)
     parser.add_argument("--video-backend", default="pyav", choices=("pyav", "video_reader", "torchcodec"))
+    parser.add_argument("--metadata-file", default="task_metadata.json")
     parser.add_argument("--overwrite", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     return parser.parse_args()
@@ -412,6 +444,7 @@ def main() -> None:
     sources = find_lerobot_datasets(root)
     if not sources:
         raise FileNotFoundError(f"No LeRobot datasets found under {root}")
+    sources = assign_task_ids(sources)
 
     args.output_root.mkdir(parents=True, exist_ok=True)
     print(f"Found {len(sources)} LeRobot dataset(s).", flush=True)
@@ -419,6 +452,9 @@ def main() -> None:
     if args.dry_run:
         dry_run(sources, args)
         return
+
+    metadata_path = write_task_metadata(sources, args)
+    print(f"Wrote task metadata: {metadata_path}", flush=True)
 
     for source in sources:
         convert_one(source, args)
