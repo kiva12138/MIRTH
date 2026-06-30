@@ -46,11 +46,19 @@ def libero_dataset_transform(trajectory: Dict[str, Any]) -> Dict[str, Any]:
     return trajectory
 
 def lerobot_dataset_transform(trajectory: Dict[str, Any]) -> Dict[str, Any]:
-    traj_len = tf.shape(trajectory["action"])[0]
-
     trajectory["action"] = tf.cast(trajectory["action"], tf.float32)
+    tf.debugging.assert_equal(
+        tf.shape(trajectory["action"])[-1],
+        6,
+        message="LeRobotKitchenNew action must be 6D.",
+    )
+
     trajectory["observation"]["EEF_state"] = tf.cast(trajectory["observation"]["state"], tf.float32)
-    trajectory["observation"]["gripper_state"] = tf.zeros((traj_len, 1), dtype=tf.float32)
+    tf.debugging.assert_equal(
+        tf.shape(trajectory["observation"]["EEF_state"])[-1],
+        6,
+        message="LeRobotKitchenNew proprio/state must be 6D.",
+    )
     return trajectory
 
 

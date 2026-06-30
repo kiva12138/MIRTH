@@ -58,7 +58,7 @@ def _make_lerobot_kitchen_new_config():
     return {
         "image_obs_keys": {"primary": "image", "secondary": None, "wrist": "front_image"},
         "depth_obs_keys": {"primary": None, "secondary": None, "wrist": None},
-        "state_obs_keys": ["EEF_state", None, "gripper_state"],
+        "state_obs_keys": ["EEF_state"],
         "state_encoding": StateEncoding.POS_EULER,
         "action_encoding": ActionEncoding.EEF_POS,
     }
