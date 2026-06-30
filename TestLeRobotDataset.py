@@ -180,7 +180,7 @@ def build_lerobot_dataset(args):
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--local-root", type=Path, default=Path(r"E:\DATA_TRIMMED"))
+    parser.add_argument("--local-root", type=Path, default=Path(r"E:\LeRobotKitchenNew"))
     parser.add_argument("--repo-id", default="local_lerobot")
     parser.add_argument("--output-dir", type=Path, default=Path("./outputs"))
     parser.add_argument("--primary-image-key", default="observation.images.main")
