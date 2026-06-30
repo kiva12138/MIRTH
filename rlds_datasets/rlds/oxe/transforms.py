@@ -19,6 +19,7 @@ from typing import Any, Dict
 
 import tensorflow as tf
 
+from rlds_datasets.rlds.oxe.configs import LEROBOT_KITCHEN_NEW_TASKS
 from rlds_datasets.rlds.oxe.utils.droid_utils import droid_baseact_transform, droid_finetuning_transform
 from rlds_datasets.rlds.utils.data_utils import (
     binarize_gripper_actions,
@@ -61,28 +62,12 @@ OXE_STANDARDIZATION_TRANSFORMS = {
     "libero_object_no_noops": libero_dataset_transform,
     "libero_goal_no_noops": libero_dataset_transform,
     "libero_10_no_noops": libero_dataset_transform,
-    "level1_a": lerobot_dataset_transform,
-    "level1_b": lerobot_dataset_transform,
-    "level1_c": lerobot_dataset_transform,
-    "level1_d": lerobot_dataset_transform,
-    "level1_e": lerobot_dataset_transform,
-    "level2_a": lerobot_dataset_transform,
-    "level2_b": lerobot_dataset_transform,
-    "level2_c": lerobot_dataset_transform,
-    "level2_d": lerobot_dataset_transform,
-    "level2_e": lerobot_dataset_transform,
-    "level2_f": lerobot_dataset_transform,
-    "level2_g": lerobot_dataset_transform,
-    "level2_h": lerobot_dataset_transform,
-    "level2_i": lerobot_dataset_transform,
-    "level2_j": lerobot_dataset_transform,
-    "place_the_banana_in_the_plate_on_the_right": lerobot_dataset_transform,
-    "place_the_brown_kiwi_on_the_cutting_board": lerobot_dataset_transform,
-    "place_the_carrot_in_the_plate_on_the_left": lerobot_dataset_transform,
-    "place_the_star_fruit_in_the_white_frying_pan": lerobot_dataset_transform,
-    "close_the_second_drawer_of_the_four_drawer_cabinet": lerobot_dataset_transform,
-    "open_the_second_drawer_put_the_banana_into_it_and_close_the_drawer": lerobot_dataset_transform,
-    "open_the_top_drawer_of_the_four_drawer_cabinet": lerobot_dataset_transform,
-    "open_the_top_drawer_place_the_spatula_inside_it_and_close_the_drawer": lerobot_dataset_transform,
 
 }
+
+OXE_STANDARDIZATION_TRANSFORMS.update(
+    {
+        task_name: lerobot_dataset_transform
+        for task_name in LEROBOT_KITCHEN_NEW_TASKS
+    }
+)

@@ -35,6 +35,29 @@ overwatch = initialize_overwatch(__name__)
 tf.config.set_visible_devices([], "GPU")
 
 
+def _make_tfds_builder(name: str, data_dir: str) -> tfds.core.DatasetBuilder:
+    try:
+        return tfds.builder(name, data_dir=data_dir)
+    except Exception as builder_error:
+        dataset_dir = tf.io.gfile.join(data_dir, name)
+        if not tf.io.gfile.isdir(dataset_dir):
+            raise builder_error
+
+        version_dirs = [
+            version
+            for version in tf.io.gfile.listdir(dataset_dir)
+            if tf.io.gfile.exists(tf.io.gfile.join(dataset_dir, version, "dataset_info.json"))
+        ]
+        if not version_dirs or not hasattr(tfds, "builder_from_directory"):
+            raise builder_error
+
+        def version_key(version: str):
+            return tuple(int(part) if part.isdigit() else part for part in version.split("."))
+
+        builder_dir = tf.io.gfile.join(dataset_dir, sorted(version_dirs, key=version_key)[-1])
+        return tfds.builder_from_directory(builder_dir)
+
+
 # ruff: noqa: B006
 def make_dataset_from_rlds(
     name: str,
@@ -199,7 +222,7 @@ def make_dataset_from_rlds(
 
         return traj
 
-    builder = tfds.builder(name, data_dir=data_dir)
+    builder = _make_tfds_builder(name, data_dir)
 
     # load or compute dataset statistics
     if isinstance(dataset_statistics, str):

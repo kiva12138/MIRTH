@@ -7,6 +7,8 @@ a float "sampling weight"
 
 from typing import Dict, List, Tuple
 
+from rlds_datasets.rlds.oxe.configs import LEROBOT_KITCHEN_NEW_TASKS
+
 # fmt: off
 OXE_NAMED_MIXTURES: Dict[str, List[Tuple[str, float]]] = {
     # === LIBERO Datasets (Modified Versions) ===
@@ -28,100 +30,39 @@ OXE_NAMED_MIXTURES: Dict[str, List[Tuple[str, float]]] = {
         ("libero_goal_no_noops", 1.0),
         ("libero_10_no_noops", 1.0),
     ],
-    
-    
-    # LeRobot Datasets
-    "lerobot_all": [
-        ("level1_a", 1.0),
-        ("level1_b", 1.0),
-        ("level1_c", 1.0),
-        ("level1_d", 1.0),
-        ("level1_e", 1.0),
-        ("level2_a", 1.0),
-        ("level2_b", 1.0),
-        ("level2_c", 1.0),
-        ("level2_d", 1.0),
-        ("level2_e", 1.0),
-        ("level2_f", 1.0),
-        ("level2_g", 1.0),
-        ("level2_h", 1.0),
-        ("level2_i", 1.0),
-        ("level2_j", 1.0),
-    ],
-    "lerobot_a": [
-        ("level1_a", 1.0),
-        ("level1_b", 1.0),
-        ("level1_c", 1.0),
-        ("level1_d", 1.0),
-        ("level1_e", 1.0),
-    ],    
-    "lerobot_b": [
-        ("level2_a", 1.0),
-        ("level2_b", 1.0),
-        ("level2_c", 1.0),
-        ("level2_d", 1.0),
-        ("level2_e", 1.0),
-        ("level2_f", 1.0),
-        ("level2_g", 1.0),
-        ("level2_h", 1.0),
-        ("level2_i", 1.0),
-        ("level2_j", 1.0),
-    ],
-    "basic_tasks": [
-        ("level1_a", 1.0),
-        ("level1_b", 1.0),
-    ],
-    "mechanism_ops": [
-        ("level1_c", 1.0),
-        ("level2_d", 1.0),
-        ("level2_h", 1.0),
-    ],
-    "two_object_transfer_and_relative_pos": [
-        ("level1_d", 1.0),
-        ("level2_d", 1.0),
-    ],
-    "scene_rearrangement_and_alignment": [
-        ("level1_e", 1.0),
-        ("level1_b", 1.0),
-        ("level2_i", 1.0),
-        ("level2_e", 1.0),
-    ],
-    "category_attribute_grouping": [
-        ("level2_a", 1.0),
-        ("level2_f", 1.0),
-        ("level2_e", 1.0),
-        ("level2_i", 1.0),
-    ],
-    "state_based_inference_cut_uncut_visibility": [
-        ("level2_b", 1.0),
-        ("level2_j", 1.0),
-    ],
-    "recipe_semantic_composition": [
-        ("level2_c", 1.0),
-        ("level2_g", 1.0),
-    ],
-    "tidying_storage_clearing": [
-        ("level2_e", 1.0),
-        ("level2_i", 1.0),
-        ("level2_a", 1.0),
-    ],
-    "count_condition_order_constraints": [
-        ("level2_j", 1.0),
-        ("level2_b", 1.0),
-    ],
 
-    # New LeRobot Dataset
-    "new_lerobot_1":[
-        ("place_the_banana_in_the_plate_on_the_right", 1.0),
-        ("place_the_brown_kiwi_on_the_cutting_board", 1.0),
-        ("place_the_carrot_in_the_plate_on_the_left", 1.0),
-        ("place_the_star_fruit_in_the_white_frying_pan", 1.0),
+    # === LeRobotKitchenNew RLDS Datasets ===
+    "lerobot_kitchen_new": [(task_name, 1.0) for task_name in LEROBOT_KITCHEN_NEW_TASKS],
+    "lerobot_kitchen_new_basic_tasks": [
+        ("task1", 1.0),
+        ("task2", 1.0),
+        ("task3", 1.0),
+        ("task4", 1.0),
     ],
-    "new_lerobot_2":[
-        ("close_the_second_drawer_of_the_four_drawer_cabinet", 1.0),
-        ("open_the_second_drawer_put_the_banana_into_it_and_close_the_drawer", 1.0),
-        ("open_the_top_drawer_of_the_four_drawer_cabinet", 1.0),
-        ("open_the_top_drawer_place_the_spatula_inside_it_and_close_the_drawer", 1.0),
-    ]
+    "lerobot_kitchen_new_category_reasoning": [
+        ("task5", 1.0),
+        ("task6", 1.0),
+        ("task7", 1.0),
+        ("task8", 1.0),
+    ],
+    "lerobot_kitchen_new_mechanism_operations": [
+        ("task9", 1.0),
+        ("task10", 1.0),
+        ("task11", 1.0),
+        ("task12", 1.0),
+    ],
+    "lerobot_kitchen_new_scene_rearrange": [
+        ("task13", 1.0),
+        ("task14", 1.0),
+        ("task15", 1.0),
+        ("task16", 1.0),
+    ],
+    "lerobot_kitchen_new_semantic_recipe": [
+        ("task17", 1.0),
+        ("task18", 1.0),
+        ("task19", 1.0),
+        ("task20", 1.0),
+    ],
+    
 }
 # fmt: on

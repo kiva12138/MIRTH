@@ -51,6 +51,19 @@ class ActionEncoding(IntEnum):
 
 
 # === Individual Dataset Configs ===
+LEROBOT_KITCHEN_NEW_TASKS = tuple(f"task{i}" for i in range(1, 21))
+
+
+def _make_lerobot_kitchen_new_config():
+    return {
+        "image_obs_keys": {"primary": "image", "secondary": None, "wrist": "front_image"},
+        "depth_obs_keys": {"primary": None, "secondary": None, "wrist": None},
+        "state_obs_keys": ["EEF_state", None, "gripper_state"],
+        "state_encoding": StateEncoding.POS_EULER,
+        "action_encoding": ActionEncoding.EEF_POS,
+    }
+
+
 OXE_DATASET_CONFIGS = {
     ### LIBERO datasets (modified versions)
     "libero_spatial_no_noops": {
@@ -81,166 +94,11 @@ OXE_DATASET_CONFIGS = {
         "state_encoding": StateEncoding.POS_EULER,
         "action_encoding": ActionEncoding.EEF_POS,
     },
-    "level1_a": {
-        "image_obs_keys": {"primary": "image", "secondary": None, "wrist": "front_image"},
-        "depth_obs_keys": {"primary": None, "secondary": None, "wrist": None},
-        "state_obs_keys": ["EEF_state", None, "gripper_state"],
-        "state_encoding": StateEncoding.POS_EULER,
-        "action_encoding": ActionEncoding.EEF_POS,
-    },
-    "level1_b": {
-        "image_obs_keys": {"primary": "image", "secondary": None, "wrist": "front_image"},
-        "depth_obs_keys": {"primary": None, "secondary": None, "wrist": None},
-        "state_obs_keys": ["EEF_state", None, "gripper_state"],
-        "state_encoding": StateEncoding.POS_EULER,
-        "action_encoding": ActionEncoding.EEF_POS,
-    },
-    "level1_c": {
-        "image_obs_keys": {"primary": "image", "secondary": None, "wrist": "front_image"},
-        "depth_obs_keys": {"primary": None, "secondary": None, "wrist": None},
-        "state_obs_keys": ["EEF_state", None, "gripper_state"],
-        "state_encoding": StateEncoding.POS_EULER,
-        "action_encoding": ActionEncoding.EEF_POS,
-    },
-    "level1_d": {
-        "image_obs_keys": {"primary": "image", "secondary": None, "wrist": "front_image"},
-        "depth_obs_keys": {"primary": None, "secondary": None, "wrist": None},
-        "state_obs_keys": ["EEF_state", None, "gripper_state"],
-        "state_encoding": StateEncoding.POS_EULER,
-        "action_encoding": ActionEncoding.EEF_POS,
-    },
-    "level1_e": {
-        "image_obs_keys": {"primary": "image", "secondary": None, "wrist": "front_image"},
-        "depth_obs_keys": {"primary": None, "secondary": None, "wrist": None},
-        "state_obs_keys": ["EEF_state", None, "gripper_state"],
-        "state_encoding": StateEncoding.POS_EULER,
-        "action_encoding": ActionEncoding.EEF_POS,
-    },
-    "level2_a": {
-        "image_obs_keys": {"primary": "image", "secondary": None, "wrist": "front_image"},
-        "depth_obs_keys": {"primary": None, "secondary": None, "wrist": None},
-        "state_obs_keys": ["EEF_state", None, "gripper_state"],
-        "state_encoding": StateEncoding.POS_EULER,
-        "action_encoding": ActionEncoding.EEF_POS,
-    },
-    "level2_b": {
-        "image_obs_keys": {"primary": "image", "secondary": None, "wrist": "front_image"},
-        "depth_obs_keys": {"primary": None, "secondary": None, "wrist": None},
-        "state_obs_keys": ["EEF_state", None, "gripper_state"],
-        "state_encoding": StateEncoding.POS_EULER,
-        "action_encoding": ActionEncoding.EEF_POS,
-    },
-    "level2_c": {
-        "image_obs_keys": {"primary": "image", "secondary": None, "wrist": "front_image"},
-        "depth_obs_keys": {"primary": None, "secondary": None, "wrist": None},
-        "state_obs_keys": ["EEF_state", None, "gripper_state"],
-        "state_encoding": StateEncoding.POS_EULER,
-        "action_encoding": ActionEncoding.EEF_POS,
-    },
-    "level2_d": {
-        "image_obs_keys": {"primary": "image", "secondary": None, "wrist": "front_image"},
-        "depth_obs_keys": {"primary": None, "secondary": None, "wrist": None},
-        "state_obs_keys": ["EEF_state", None, "gripper_state"],
-        "state_encoding": StateEncoding.POS_EULER,
-        "action_encoding": ActionEncoding.EEF_POS,
-    },
-    "level2_e": {
-        "image_obs_keys": {"primary": "image", "secondary": None, "wrist": "front_image"},
-        "depth_obs_keys": {"primary": None, "secondary": None, "wrist": None},
-        "state_obs_keys": ["EEF_state", None, "gripper_state"],
-        "state_encoding": StateEncoding.POS_EULER,
-        "action_encoding": ActionEncoding.EEF_POS,
-    },
-    "level2_f": {
-        "image_obs_keys": {"primary": "image", "secondary": None, "wrist": "front_image"},
-        "depth_obs_keys": {"primary": None, "secondary": None, "wrist": None},
-        "state_obs_keys": ["EEF_state", None, "gripper_state"],
-        "state_encoding": StateEncoding.POS_EULER,
-        "action_encoding": ActionEncoding.EEF_POS,
-    },
-    "level2_g": {
-        "image_obs_keys": {"primary": "image", "secondary": None, "wrist": "front_image"},
-        "depth_obs_keys": {"primary": None, "secondary": None, "wrist": None},
-        "state_obs_keys": ["EEF_state", None, "gripper_state"],
-        "state_encoding": StateEncoding.POS_EULER,
-        "action_encoding": ActionEncoding.EEF_POS,
-    },
-    "level2_h": {
-        "image_obs_keys": {"primary": "image", "secondary": None, "wrist": "front_image"},
-        "depth_obs_keys": {"primary": None, "secondary": None, "wrist": None},
-        "state_obs_keys": ["EEF_state", None, "gripper_state"],
-        "state_encoding": StateEncoding.POS_EULER,
-        "action_encoding": ActionEncoding.EEF_POS,
-    },
-    "level2_i": {
-        "image_obs_keys": {"primary": "image", "secondary": None, "wrist": "front_image"},
-        "depth_obs_keys": {"primary": None, "secondary": None, "wrist": None},
-        "state_obs_keys": ["EEF_state", None, "gripper_state"],
-        "state_encoding": StateEncoding.POS_EULER,
-        "action_encoding": ActionEncoding.EEF_POS,
-    },
-    "level2_j": {
-        "image_obs_keys": {"primary": "image", "secondary": None, "wrist": "front_image"},
-        "depth_obs_keys": {"primary": None, "secondary": None, "wrist": None},
-        "state_obs_keys": ["EEF_state", None, "gripper_state"],
-        "state_encoding": StateEncoding.POS_EULER,
-        "action_encoding": ActionEncoding.EEF_POS,
-    },
-    # New Verison of LeRobot
-    "place_the_banana_in_the_plate_on_the_right": {
-        "image_obs_keys": {"primary": "image", "secondary": None, "wrist": "front_image"},
-        "depth_obs_keys": {"primary": None, "secondary": None, "wrist": None},
-        "state_obs_keys": ["EEF_state", None, "gripper_state"],
-        "state_encoding": StateEncoding.POS_EULER,
-        "action_encoding": ActionEncoding.EEF_POS,
-    },
-    "place_the_brown_kiwi_on_the_cutting_board": {
-        "image_obs_keys": {"primary": "image", "secondary": None, "wrist": "front_image"},
-        "depth_obs_keys": {"primary": None, "secondary": None, "wrist": None},
-        "state_obs_keys": ["EEF_state", None, "gripper_state"],
-        "state_encoding": StateEncoding.POS_EULER,
-        "action_encoding": ActionEncoding.EEF_POS,
-    },
-    "place_the_carrot_in_the_plate_on_the_left": {
-        "image_obs_keys": {"primary": "image", "secondary": None, "wrist": "front_image"},
-        "depth_obs_keys": {"primary": None, "secondary": None, "wrist": None},
-        "state_obs_keys": ["EEF_state", None, "gripper_state"],
-        "state_encoding": StateEncoding.POS_EULER,
-        "action_encoding": ActionEncoding.EEF_POS,
-    },
-    "place_the_star_fruit_in_the_white_frying_pan": {
-        "image_obs_keys": {"primary": "image", "secondary": None, "wrist": "front_image"},
-        "depth_obs_keys": {"primary": None, "secondary": None, "wrist": None},
-        "state_obs_keys": ["EEF_state", None, "gripper_state"],
-        "state_encoding": StateEncoding.POS_EULER,
-        "action_encoding": ActionEncoding.EEF_POS,
-    },
-    "close_the_second_drawer_of_the_four_drawer_cabinet": {
-        "image_obs_keys": {"primary": "image", "secondary": None, "wrist": "front_image"},
-        "depth_obs_keys": {"primary": None, "secondary": None, "wrist": None},
-        "state_obs_keys": ["EEF_state", None, "gripper_state"],
-        "state_encoding": StateEncoding.POS_EULER,
-        "action_encoding": ActionEncoding.EEF_POS,
-    },
-    "open_the_second_drawer_put_the_banana_into_it_and_close_the_drawer": {
-        "image_obs_keys": {"primary": "image", "secondary": None, "wrist": "front_image"},
-        "depth_obs_keys": {"primary": None, "secondary": None, "wrist": None},
-        "state_obs_keys": ["EEF_state", None, "gripper_state"],
-        "state_encoding": StateEncoding.POS_EULER,
-        "action_encoding": ActionEncoding.EEF_POS,
-    },
-    "open_the_top_drawer_of_the_four_drawer_cabinet": {
-        "image_obs_keys": {"primary": "image", "secondary": None, "wrist": "front_image"},
-        "depth_obs_keys": {"primary": None, "secondary": None, "wrist": None},
-        "state_obs_keys": ["EEF_state", None, "gripper_state"],
-        "state_encoding": StateEncoding.POS_EULER,
-        "action_encoding": ActionEncoding.EEF_POS,
-    },
-    "open_the_top_drawer_place_the_spatula_inside_it_and_close_the_drawer": {
-        "image_obs_keys": {"primary": "image", "secondary": None, "wrist": "front_image"},
-        "depth_obs_keys": {"primary": None, "secondary": None, "wrist": None},
-        "state_obs_keys": ["EEF_state", None, "gripper_state"],
-        "state_encoding": StateEncoding.POS_EULER,
-        "action_encoding": ActionEncoding.EEF_POS,
-    },
 }
+
+OXE_DATASET_CONFIGS.update(
+    {
+        task_name: _make_lerobot_kitchen_new_config()
+        for task_name in LEROBOT_KITCHEN_NEW_TASKS
+    }
+)
