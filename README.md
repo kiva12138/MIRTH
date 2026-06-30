@@ -61,9 +61,26 @@ Note that the non-flash path is **noticeably slower (about 0.3x)** and uses more
 
 ---
 
-## 2. Smoke-test the environment
+## 2. Downloads
+
+Download the pretrained OpenVLA-7B (Prismatic) checkpoint from [openvla/openvla-7b-prismatic](https://huggingface.co/openvla/openvla-7b-prismatic), then set `pretrained_vla_path` / `PRETRAINED_VLA_PATH` to the local `.pt` checkpoint path.
+
+MIRTH supports two dataset formats:
+
+| Format | Loader | Download link |
+| --- | --- | --- |
+| RLDS / TFDS format | `rlds_datasets.RLDSDataset` | TBD |
+| LeRobot format | `lerobot_datasets.LeRobotOpenVLADataset` | TBD |
+
+Both loaders adapt samples to the same OpenVLA-style batch contract before collation, so they can share `PaddedCollatorForActionPrediction`.
+
+---
+
+## 3. Smoke-test the environment
 
 Before launching a multi-GPU fine-tune, run the `Test*.py` scripts in the repository root to verify that each major component loads correctly on your machine. They are small, self-contained, and surface most installation issues (missing CUDA libs, broken `flash_attn`, wrong `transformers` version, bad HF token, missing RLDS data, etc.) much faster than a full training run.
+
+Before running these scripts, edit their path variables so they point to your real downloaded files and dataset roots, including the OpenVLA checkpoint path, Hugging Face token file, and RLDS / LeRobot dataset directories.
 
 Run them one by one:
 
@@ -89,26 +106,15 @@ If all five pass, your environment is ready for fine-tuning.
 
 ---
 
-## 3. Fine-tuning
+## 4. Fine-tuning
 
-### 3.1 Supported data formats
-
-MIRTH supports two dataset formats:
-
-| Format | Loader | Download link |
-| --- | --- | --- |
-| RLDS / TFDS format | `rlds_datasets.RLDSDataset` | TBD |
-| LeRobot format | `lerobot_datasets.LeRobotOpenVLADataset` | TBD |
-
-Both loaders adapt samples to the same OpenVLA-style batch contract before collation, so they can share `PaddedCollatorForActionPrediction`.
-
-### 3.2 Configure paths and hyperparameters
+### 4.1 Configure paths and hyperparameters
 
 All training options live in the `RunConfig` dataclass at the top of [finetune_ddp.py](finetune_ddp.py). Before launching, edit at least the following fields to match your environment:
 
 | Field | Meaning |
 | --- | --- |
-| `pretrained_vla_path` | Path to the pretrained OpenVLA-7B (Prismatic) checkpoint `.pt` file |
+| `pretrained_vla_path` | Path to the pretrained OpenVLA-7B (Prismatic) checkpoint `.pt` file downloaded from [openvla/openvla-7b-prismatic](https://huggingface.co/openvla/openvla-7b-prismatic) |
 | `hf_token` | Path to a file containing your Hugging Face access token |
 | `data_root_dir` | Directory containing the training datasets; use the RLDS / TFDS root for `RLDSDataset`, or the LeRobot root for `LeRobotOpenVLADataset` |
 | `run_dir` | Where logs and checkpoints will be written |
@@ -124,7 +130,7 @@ Other commonly tuned fields:
 - **LoRA**: `use_lora`, `lora_rank`, `lora_dropout`.
 - **Stage**: `stage` controls which backbones are frozen (`lvp` = freeze LLM + vision + projector backbones, `lv` = freeze LLM + vision).
 
-### 3.3 Launch DDP training
+### 4.2 Launch DDP training
 
 A typical 3-GPU launch (matching the comment at the top of [finetune_ddp.py](finetune_ddp.py#L1-L4)):
 
@@ -140,11 +146,11 @@ Checkpoints are saved every `save_freq` steps under `<run_dir>/<run_id>/checkpoi
 
 ---
 
-## 4. Evaluation on LIBERO
+## 5. Evaluation on LIBERO
 
 After fine-tuning, evaluate your checkpoint with [eval_libero.py](eval_libero.py).
 
-### 4.1 Configure evaluation
+### 5.1 Configure evaluation
 
 `EvalConfig` (top of [eval_libero.py](eval_libero.py#L40-L54)) inherits from `RunConfig`, so most model-side fields are loaded automatically from the saved `run_config.jsonl`. You typically only need to set:
 
@@ -157,7 +163,7 @@ After fine-tuning, evaluate your checkpoint with [eval_libero.py](eval_libero.py
 | `device` | GPU index |
 | `num_trials_per_task` | Number of rollouts per task (default `30`) |
 
-### 4.2 Run evaluation
+### 5.2 Run evaluation
 
 ```bash
 python eval_libero.py \

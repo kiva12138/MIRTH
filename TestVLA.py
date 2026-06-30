@@ -14,6 +14,10 @@ from config.config_vla import (
 from models.vla_model import MIRTH, MIRTHConfig
 
 
+PRETRAINED_VLA_PATH = r"E:\PretrainedModels\openvla-7b-prismatic\checkpoints\step-295000-epoch-40-loss=0.2200.pt"
+HF_TOKEN = r"/home/sunhao/MachineLearning/hf_token"
+
+
 def build_synthetic_batch(B, history_len, num_cameras, num_reason_token, prompt_len, device):
     """Construct a minimally well-formed input batch.
 
@@ -87,10 +91,10 @@ def test_mirth_forward():
     torch.manual_seed(0)
 
     config = MIRTHConfig(
-        pretrained_vla_path="/mnt/data1/OpenVLA/openvla-7b-prismatic/checkpoints/step-295000-epoch-40-loss=0.2200.pt",
+        pretrained_vla_path=PRETRAINED_VLA_PATH,
         num_images_in_input=2,
         use_proprio=True,
-        hf_token="/home/sunhao/MachineLearning/hf_token",
+        hf_token=HF_TOKEN,
         action_token_type="one_for_action_step",
         use_timestamp=False,
         action_biattnn=False,
@@ -178,10 +182,10 @@ def test_mirth_freeze_backbones():
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
     config = MIRTHConfig(
-        pretrained_vla_path="/mnt/data1/OpenVLA/openvla-7b-prismatic/checkpoints/step-295000-epoch-40-loss=0.2200.pt",
+        pretrained_vla_path=PRETRAINED_VLA_PATH,
         num_images_in_input=2,
         use_proprio=True,
-        hf_token="/home/sunhao/MachineLearning/hf_token",
+        hf_token=HF_TOKEN,
         action_token_type="one_for_action_step",
         use_vision_memory_hub=True,
         use_proprio_memory_hub=True,
