@@ -86,21 +86,15 @@ def _to_numpy(obj: Any) -> Any:
     return obj
 
 
-def _as_float32(x: Any, dim: int | None = None) -> np.ndarray:
+def _as_float32(x: Any, dim: int | None = None, *, name: str = "array") -> np.ndarray:
     arr = np.asarray(x, dtype=np.float32)
     if dim is not None:
-        arr = _pad_or_trim_last_dim(arr, dim)
+        assert arr.ndim > 0, f"{name} must have at least one dimension, got shape {arr.shape}"
+        assert arr.shape[-1] == dim, (
+            f"{name} last dimension mismatch: expected {dim}, "
+            f"got {arr.shape[-1]} with shape {arr.shape}"
+        )
     return arr
-
-
-def _pad_or_trim_last_dim(x: np.ndarray, dim: int) -> np.ndarray:
-    if x.shape[-1] == dim:
-        return x
-    if x.shape[-1] > dim:
-        return x[..., :dim]
-    pad = [(0, 0)] * x.ndim
-    pad[-1] = (0, dim - x.shape[-1])
-    return np.pad(x, pad, mode="constant")
 
 
 def _image_from_array(x: Any) -> Image.Image:
@@ -389,17 +383,42 @@ class LeRobotOpenVLADataset(Dataset):
         }
 
         history_actions = np.stack(
-            [_as_float32(self._get(raw, self.config.action_key), self.config.action_dim) for raw in history],
+            [
+                _as_float32(
+                    self._get(raw, self.config.action_key),
+                    self.config.action_dim,
+                    name=self.config.action_key,
+                )
+                for raw in history
+            ],
             axis=0,
         )
         action_chunk = np.stack(
-            [_as_float32(self._get(raw, self.config.action_key), self.config.action_dim) for raw in future],
+            [
+                _as_float32(
+                    self._get(raw, self.config.action_key),
+                    self.config.action_dim,
+                    name=self.config.action_key,
+                )
+                for raw in future
+            ],
             axis=0,
         )
 
-        proprio = _as_float32(self._get(current, self.config.state_key), self.config.proprio_dim)
+        proprio = _as_float32(
+            self._get(current, self.config.state_key),
+            self.config.proprio_dim,
+            name=self.config.state_key,
+        )
         proprio_history = np.stack(
-            [_as_float32(self._get(raw, self.config.state_key), self.config.proprio_dim) for raw in history],
+            [
+                _as_float32(
+                    self._get(raw, self.config.state_key),
+                    self.config.proprio_dim,
+                    name=self.config.state_key,
+                )
+                for raw in history
+            ],
             axis=0,
         )
 
