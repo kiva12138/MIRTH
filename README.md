@@ -67,6 +67,10 @@ Note that the non-flash path is **noticeably slower (about 0.3x)** and uses more
 
 Download the pretrained OpenVLA-7B (Prismatic) checkpoint from [openvla/openvla-7b-prismatic](https://huggingface.co/openvla/openvla-7b-prismatic), then set `pretrained_vla_path` / `PRETRAINED_VLA_PATH` to the local `.pt` checkpoint path.
 
+Baidu Disk: https://pan.baidu.com/s/1d8RFeruwF5124L2t4BFUkg?pwd=7890 Code: 7890
+
+Google Drive: https://drive.google.com/drive/folders/12B_y0w7uoEtVVO91aHMqPuNtV2fbYXGs?usp=drive_link
+
 MIRTH supports two dataset formats:
 
 | Format | Loader | Download link |
