@@ -18,6 +18,7 @@ the output root.
 from __future__ import annotations
 
 import argparse
+import concurrent.futures
 import io
 import json
 import re
@@ -368,8 +369,21 @@ def infer_shapes(source: LeRobotSource, args) -> tuple[int, int, tuple[int, int,
     return action_dim, state_dim, primary_image_shape, wrist_image_shape
 
 
+def dataset_is_prepared(source: LeRobotSource, args) -> bool:
+    version_dir = args.output_root / source.name / args.version
+    if not version_dir.is_dir():
+        return False
+    if not (version_dir / "dataset_info.json").is_file():
+        return False
+    return any(version_dir.glob(f"{source.name}-*.tfrecord-*"))
+
+
 def convert_one(source: LeRobotSource, args) -> None:
     tfds = import_tfds()
+    if not args.overwrite and dataset_is_prepared(source, args):
+        print(f"Skipping existing dataset: {source.name} ({args.output_root / source.name / args.version})", flush=True)
+        return
+
     action_dim, state_dim, primary_image_shape, wrist_image_shape = infer_shapes(source, args)
     builder_cls = make_builder_class(
         args,
@@ -403,6 +417,25 @@ def convert_one(source: LeRobotSource, args) -> None:
     print(f"Done: {source.name}", flush=True)
 
 
+def convert_all(sources: Iterable[LeRobotSource], args) -> None:
+    sources = list(sources)
+    if args.num_workers <= 1 or len(sources) <= 1:
+        for source in sources:
+            convert_one(source, args)
+        return
+
+    max_workers = min(args.num_workers, len(sources))
+    print(f"Converting with {max_workers} worker processes.", flush=True)
+    with concurrent.futures.ProcessPoolExecutor(max_workers=max_workers) as executor:
+        futures = {executor.submit(convert_one, source, args): source for source in sources}
+        for future in concurrent.futures.as_completed(futures):
+            source = futures[future]
+            try:
+                future.result()
+            except Exception as exc:
+                raise RuntimeError(f"Failed to convert {source.name} from {source.path}") from exc
+
+
 def dry_run(sources: Iterable[LeRobotSource], args) -> None:
     for source in sources:
         info = read_info(source.path)
@@ -433,6 +466,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--jpeg-quality", type=int, default=95)
     parser.add_argument("--video-backend", default="pyav", choices=("pyav", "video_reader", "torchcodec"))
     parser.add_argument("--metadata-file", default="task_metadata.json")
+    parser.add_argument(
+        "--num-workers",
+        type=int,
+        default=1,
+        help="Number of worker processes for converting multiple tasks in parallel.",
+    )
     parser.add_argument("--overwrite", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     return parser.parse_args()
@@ -440,6 +479,9 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
+    if args.num_workers < 1:
+        raise ValueError("--num-workers must be at least 1")
+
     root = args.single_dataset if args.single_dataset is not None else args.lerobot_root
     sources = find_lerobot_datasets(root)
     if not sources:
@@ -456,8 +498,7 @@ def main() -> None:
     metadata_path = write_task_metadata(sources, args)
     print(f"Wrote task metadata: {metadata_path}", flush=True)
 
-    for source in sources:
-        convert_one(source, args)
+    convert_all(sources, args)
 
 
 if __name__ == "__main__":
