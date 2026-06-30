@@ -16,9 +16,9 @@ from utils.data_utils import PaddedCollatorForActionPrediction
 from utils.train_utiils import get_action_tokens_mask, get_reasoning_tokens_mask
 
 
-DATA_ROOT_DIR = "/media/sunhao/T7/LIBERO/modified_libero_rlds/"
-DATASET_NAME = "libero_goal_no_noops"
-HF_TOKEN = "your_huggingface_token_here"  # replace with your Hugging Face token if needed
+DATA_ROOT_DIR = r"E:\LeRobotKitchenNewRLDS"
+DATASET_NAME = "lerobot_kitchen_new_basic_tasks"
+HF_TOKEN = "your_hf_token"  # replace with your Hugging Face token if needed
 
 
 def test_rlds_dataset():
