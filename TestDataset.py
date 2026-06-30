@@ -1,4 +1,9 @@
+import time
+from pathlib import Path
+
+import numpy as np
 import torch
+from PIL import Image, ImageDraw
 from torch.utils.data import DataLoader
 
 from config.config_vla import (
@@ -19,6 +24,110 @@ from utils.train_utiils import get_action_tokens_mask, get_reasoning_tokens_mask
 DATA_ROOT_DIR = r"E:\LeRobotKitchenNewRLDS"
 DATASET_NAME = "lerobot_kitchen_new_basic_tasks"
 HF_TOKEN = "your_hf_token"  # replace with your Hugging Face token if needed
+OUTPUT_DIR = Path("./outputs")
+VIS_MAX_SAMPLES = 32
+VIS_PROGRESS_EVERY = 10
+
+
+def image_to_pil(value) -> Image.Image:
+    arr = np.asarray(value)
+    if arr.ndim == 4:
+        arr = arr[-1]
+    if arr.ndim == 3 and arr.shape[0] in (1, 3, 4) and arr.shape[-1] not in (1, 3, 4):
+        arr = np.moveaxis(arr, 0, -1)
+    if arr.ndim == 2:
+        arr = np.repeat(arr[..., None], 3, axis=-1)
+    if arr.ndim != 3:
+        raise ValueError(f"Unsupported image shape: {arr.shape}")
+    if arr.shape[-1] == 1:
+        arr = np.repeat(arr, 3, axis=-1)
+    if arr.shape[-1] > 3:
+        arr = arr[..., :3]
+    if np.issubdtype(arr.dtype, np.floating):
+        if arr.size and arr.max() <= 1.0:
+            arr = arr * 255.0
+        arr = np.clip(arr, 0, 255).astype(np.uint8)
+    elif arr.dtype != np.uint8:
+        arr = np.clip(arr, 0, 255).astype(np.uint8)
+    return Image.fromarray(np.ascontiguousarray(arr)).convert("RGB")
+
+
+def vector_text(value, precision: int = 3, max_items: int = 12) -> str:
+    arr = np.asarray(value, dtype=np.float32).reshape(-1)
+    shown = arr[:max_items].tolist()
+    suffix = ", ..." if arr.size > max_items else ""
+    return "[" + ", ".join(f"{x:.{precision}f}" for x in shown) + suffix + "]"
+
+
+def scalar_text(value) -> str:
+    arr = np.asarray(value).reshape(-1)
+    if arr.size == 0:
+        return ""
+    item = arr[0]
+    if isinstance(item, bytes):
+        return item.decode()
+    return str(item)
+
+
+def save_rlds_visualization(rlds_batch, idx: int, output_root: Path) -> Path:
+    observation = rlds_batch["observation"]
+    task = rlds_batch["task"]
+    primary = image_to_pil(observation["image_primary"][-1])
+    wrist = image_to_pil(observation["image_wrist"][-1])
+    current_action_index = int(np.asarray(observation["image_primary"]).shape[0] - 1)
+    current_action_chunk = rlds_batch["action"][current_action_index:]
+
+    label_height = 24
+    text_lines = [
+        f"sample={idx} dataset={scalar_text(rlds_batch['dataset_name'])} timestep={scalar_text(observation['timestep'][-1])}",
+        f"task: {scalar_text(task['language_instruction'])}",
+        f"current_action: {vector_text(rlds_batch['action'][current_action_index])}",
+        f"current_action_chunk_shape: {tuple(current_action_chunk.shape)} full_action_shape: {tuple(rlds_batch['action'].shape)}",
+        f"proprio: {vector_text(observation['proprio'][-1])}",
+        f"proprio_shape: {tuple(observation['proprio'].shape)} pad_mask: {np.asarray(observation['pad_mask']).astype(int).tolist()}",
+    ]
+    text_height = 18 * len(text_lines) + 12
+    image_height = max(primary.height, wrist.height)
+    width = primary.width + wrist.width
+
+    canvas = Image.new("RGB", (width, label_height + image_height + text_height), color=(245, 245, 245))
+    draw = ImageDraw.Draw(canvas)
+
+    x = 0
+    for name, image in (("primary", primary), ("wrist", wrist)):
+        draw.rectangle((x, 0, x + image.width, label_height), fill=(30, 30, 30))
+        draw.text((x + 8, 5), name, fill=(255, 255, 255))
+        canvas.paste(image, (x, label_height))
+        x += image.width
+
+    y = label_height + image_height + 6
+    for line in text_lines:
+        draw.text((8, y), line, fill=(0, 0, 0))
+        y += 18
+
+    out_dir = output_root / DATASET_NAME
+    out_dir.mkdir(parents=True, exist_ok=True)
+    out_path = out_dir / f"rlds_sample_{idx:06d}.jpg"
+    canvas.save(out_path, quality=92)
+    return out_path
+
+
+def visualize_rlds_dataset(dataset: RLDSDataset, output_root: Path, max_samples: int) -> None:
+    print("-" * 60)
+    print(f"Saving {max_samples} RLDS visualizations to {output_root / DATASET_NAME}")
+    print("-" * 60)
+
+    started_at = time.time()
+    iterator = dataset.dataset.as_numpy_iterator()
+    try:
+        for idx in range(max_samples):
+            save_rlds_visualization(next(iterator), idx, output_root)
+            if VIS_PROGRESS_EVERY > 0 and ((idx + 1) % VIS_PROGRESS_EVERY == 0 or idx + 1 == max_samples):
+                elapsed = time.time() - started_at
+                rate = (idx + 1) / elapsed if elapsed > 0 else 0.0
+                print(f"visualized {idx + 1}/{max_samples}, rate={rate:.2f} samples/s", flush=True)
+    finally:
+        del iterator
 
 
 def test_rlds_dataset():
@@ -65,6 +174,7 @@ def test_rlds_dataset():
     )
     print(f"  dataset length (transitions): {len(dataset)}")
     print(f"  dataset statistics keys: {list(dataset.dataset_statistics.keys())}")
+    visualize_rlds_dataset(dataset, OUTPUT_DIR, VIS_MAX_SAMPLES)
 
     collator = PaddedCollatorForActionPrediction(
         model_max_length=tokenizer.model_max_length,
