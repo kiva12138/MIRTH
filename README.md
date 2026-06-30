@@ -2,7 +2,7 @@
 
 The codes for **MIRTH: Mutual-Information Reasoning with Temporal Hubs for Vision-Language-Action Agents**.
 
-> Caution: The accepted version of the paper contains errors regarding symbols and repetitions; please refer to this latest version uploaded to arXiv.
+> Caution: The accepted version of the paper contains errors regarding symbols and repetitions; please refer to this latest version uploaded to arXiv (here goes the link).
 
 > Still updating. This repository will be made fully public soon.
 
