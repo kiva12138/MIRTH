@@ -1,10 +1,75 @@
+<div align="center">
+
 # MIRTH
 
-The codes for **MIRTH: Mutual-Information Reasoning with Temporal Hubs for Vision-Language-Action Agents**.
+### Mutual-Information Reasoning with Temporal Hubs for Vision-Language-Action Agents
 
-> Caution: The accepted version of the paper contains errors regarding symbols and repetitions; please refer to this latest version uploaded to arXiv (here goes the link).
+[![ACL 2026](https://img.shields.io/badge/ACL-2026%20Long%20Paper-2f6f9f)](https://aclanthology.org/2026.acl-long.1016/)
+[![Paper](https://img.shields.io/badge/Paper-ACL%20Anthology-b31b1b)](https://aclanthology.org/2026.acl-long.1016/)
+[![PDF](https://img.shields.io/badge/PDF-download-6b7280)](https://aclanthology.org/2026.acl-long.1016.pdf)
+[![Code](https://img.shields.io/badge/Code-GitHub-111827)](https://github.com/kiva12138/MIRTH)
 
-> Still updating. This repository will be made fully public soon.
+Hao Sun, Yu Song, Shiyu Teng, Ziwei Niu, Yen-Wei Chen
+
+**ACL 2026 Long Papers**
+
+</div>
+
+MIRTH is a Vision-Language-Action (VLA) framework for history-aware robot control. It augments a pretrained OpenVLA-style backbone with temporal memory hubs, mutual-information-guided latent reasoning tokens, and parallel action decoding to address temporal myopia, reasoning gaps, and autoregressive control latency.
+
+> Paper note: the ACL Anthology page is the official citation record. The authors are preparing an updated manuscript with cleaned notation and repetition fixes; this README documents the implementation-facing settings used by the released code.
+
+---
+
+## Highlights
+
+- **Temporal memory hubs**: dual-scale workspace and short-horizon hubs compress long-term scene evolution and recent motion dynamics into compact prompts.
+- **Latent reasoning tokens**: learnable reasoning tokens are aligned with both multimodal context and action trajectories through a mutual-information objective.
+- **Parallel action decoding**: vector-wise action prediction replaces scalar-wise autoregressive decoding for higher control throughput.
+- **Simulation and real-world validation**: MIRTH is evaluated on LIBERO simulation suites and a physical LeRobot platform with multi-camera observations.
+
+## Results at a glance
+
+LIBERO success rates are averaged over 500 episodes with different seeds, following the paper evaluation protocol.
+
+| Method | Spatial | Object | Goal | Long | Average |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Diffusion Policy | 78.3 +/- 1.1% | 92.5 +/- 0.7% | 68.3 +/- 1.2% | 50.5 +/- 1.3% | 72.4% |
+| Octo | 78.9 +/- 1.0% | 85.7 +/- 0.9% | 84.6 +/- 0.9% | 51.1 +/- 1.3% | 75.1% |
+| OpenVLA | 84.7 +/- 1.4% | 88.4 +/- 0.8% | 79.2 +/- 1.1% | 53.7 +/- 0.7% | 76.5% |
+| OpenVLA-OFT | 97.6 +/- 0.7% | 98.4 +/- 0.4% | 97.9 +/- 0.8% | 94.5 +/- 0.9% | 97.1% |
+| **MIRTH (ours)** | **98.2 +/- 0.6%** | **100.0 +/- 0.4%** | **98.8 +/- 0.5%** | **95.3 +/- 1.1%** | **98.1%** |
+
+Additional analysis in the paper shows that MIRTH improves temporal grounding on LIBERO-Long, reduces normalized proprioception probing error compared with OpenVLA, and raises LeRobot failure recovery from 5.2% with single-frame OpenVLA to 12.1% with the full MIRTH model.
+
+## Method overview
+
+MIRTH keeps the pretrained VLA backbone largely frozen and adds lightweight trainable modules around it:
+
+| Component | Role |
+| --- | --- |
+| Workspace memory hub | Maintains multi-scale exponential moving averages of historical visual/proprioceptive features for long-horizon context. |
+| Short-horizon memory hub | Attends over the most recent frames to capture motion trends and high-frequency local changes. |
+| Latent reasoning tokens | Create a compact planning bridge between observations, language instructions, and action trajectories. |
+| Parallel action head | Predicts action chunks in a single forward pass instead of generating action dimensions autoregressively. |
+
+## Repository contents
+
+| Path | Purpose |
+| --- | --- |
+| [models/](models/) | MIRTH model, VLA backbone wrappers, temporal memory hubs, reasoning tokens, and action heads. |
+| [finetune_ddp.py](finetune_ddp.py) | Multi-GPU fine-tuning entry point. |
+| [eval_libero.py](eval_libero.py) | LIBERO rollout evaluation script. |
+| [rlds_datasets/](rlds_datasets/) | RLDS / TFDS-style data loading. |
+| [lerobot_datasets/](lerobot_datasets/) | LeRobot-format data loading and conversion support. |
+| [evaluation/](evaluation/) | Action sampling and LIBERO evaluation utilities. |
+
+## Release roadmap
+
+- Code: core training and evaluation code is being organized for public use.
+- Checkpoints: fine-tuned MIRTH checkpoints will be linked once upload and verification are complete.
+- Data: RLDS / TFDS and LeRobot dataset links will be added after packaging.
+- Manuscript: an updated version with cleaned notation will be linked when available.
 
 ---
 
@@ -39,7 +104,7 @@ pip install -e LIBERO
 
 ### 1.3 Install Flash Attention (recommended)
 
-We strongly recommend installing [`flash-attn`](https://github.com/Dao-AILab/flash-attention) — training is significantly faster and memory consumption is much lower:
+We strongly recommend installing [`flash-attn`](https://github.com/Dao-AILab/flash-attention) because training is significantly faster and memory consumption is much lower:
 
 ```bash
 pip install flash_attn==2.8.3 --no-build-isolation
@@ -95,7 +160,7 @@ Run them one by one:
 | [TestVisionEncoders.py](TestVisionEncoders.py) | Loads the Prism DINO + SigLIP vision backbone and the `InfusedDinoSigLIPViTBackbone` wrapper, runs a dummy forward pass on the GPU. |
 | [TestLLM.py](TestLLM.py) | Loads the pretrained LLaMA-2 backbone via Hugging Face, runs a forward pass on a templated prompt. **Edit `hf_token`** at the top of the file before running. |
 | [TestMemoryHub.py](TestMemoryHub.py) | Builds `VisionMemoryHubForTraining` / `ProprioMemoryHubForTraining` with synthetic inputs end-to-end through the infused vision encoder. |
-| [TestVLA.py](TestVLA.py) | Instantiates the full `MIRTH` model with a synthetic batch — the closest single-process proxy for what `finetune_ddp.py` does. |
+| [TestVLA.py](TestVLA.py) | Instantiates the full `MIRTH` model with a synthetic batch; this is the closest single-process proxy for what `finetune_ddp.py` does. |
 | [TestDataset.py](TestDataset.py) | Builds an `RLDSDataset` + `PaddedCollatorForActionPrediction` and iterates a few batches. **Edit `DATA_ROOT_DIR`, `DATASET_NAME`, `HF_TOKEN`** at the top of the file. Use this to confirm your RLDS data is in the expected location and format. |
 
 Typical invocation:
@@ -179,6 +244,39 @@ python eval_libero.py \
     --device 0
 ```
 
-Rendering uses headless MuJoCo via OSMesa (`MUJOCO_GL=osmesa`). On a server with a GPU but no display you may instead use `egl`; on a workstation with a display, `glfw` works too — edit the line at the top of [eval_libero.py](eval_libero.py#L7).
+Rendering uses headless MuJoCo via OSMesa (`MUJOCO_GL=osmesa`). On a server with a GPU but no display you may instead use `egl`; on a workstation with a display, `glfw` works too. Edit the line at the top of [eval_libero.py](eval_libero.py#L7).
 
 Per-task success rates and rollout videos are written under `<run_dir>/<run_id>/` and (if a wandb project is configured) logged to Weights & Biases.
+
+---
+
+## 6. Citation
+
+If MIRTH helps your research, please cite the ACL paper:
+
+```bibtex
+@inproceedings{sun-etal-2026-mirth,
+    title = "{MIRTH}: Mutual-Information Reasoning with Temporal Hubs for Vision-Language-Action Agents",
+    author = "Sun, Hao and
+      Song, Yu and
+      Teng, Shiyu and
+      Niu, Ziwei and
+      Chen, Yen-Wei",
+    editor = "Liakata, Maria and
+      Moreira, Viviane P. and
+      Zhang, Jiajun and
+      Jurgens, David",
+    booktitle = "Proceedings of the 64th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
+    month = jul,
+    year = "2026",
+    address = "San Diego, California, United States",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2026.acl-long.1016/",
+    pages = "22199--22215",
+    ISBN = "979-8-89176-390-6"
+}
+```
+
+## Contact
+
+For questions about the paper or released resources, contact Hao Sun (`sunhaoxx@fc.ritsumei.ac.jp`, `sunhaoxx@zju.edu.cn`) or Yen-Wei Chen (`chen@is.ritsumei.ac.jp`).
