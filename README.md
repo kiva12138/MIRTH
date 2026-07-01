@@ -37,7 +37,7 @@ MIRTH keeps the pretrained VLA backbone largely frozen and adds lightweight trai
   <img src="assets/mirth_architecture.png" alt="Overall MIRTH architecture with temporal hubs, latent reasoning tokens, and parallel action decoding" width="96%">
 </p>
 
-<p align="center"><em>Figure 2: Overall MIRTH architecture. Temporal memory hubs summarize historical context, latent reasoning tokens bridge multimodal observations and action trajectories, and parallel action decoding predicts the next action chunk efficiently.</em></p>
+<p align="center"><em>Figure 1: Overall MIRTH architecture. Temporal memory hubs summarize historical context, latent reasoning tokens bridge multimodal observations and action trajectories, and parallel action decoding predicts the next action chunk efficiently.</em></p>
 
 | Component | Role |
 | --- | --- |
@@ -59,10 +59,10 @@ LIBERO success rates are averaged over 500 episodes with different seeds, follow
 | **MIRTH (ours)** | **98.2 +/- 0.6%** | **100.0 +/- 0.4%** | **98.8 +/- 0.5%** | **95.3 +/- 1.1%** | **98.1%** |
 
 <p align="center">
-  <img src="assets/lerobot_results.png" alt="LeRobot real-world comparison across five task groups and throughput" width="92%">
+  <img src="assets/lerobot_results.png" alt="LeRobot real-world comparison across five task groups and throughput" width="40%">
 </p>
 
-<p align="center"><em>Figure 3: Real-world LeRobot evaluation. MIRTH improves success rates across manipulation, mechanism operation, scene rearrangement, category reasoning, and recipe-level semantic tasks while maintaining high control throughput.</em></p>
+<p align="center"><em>Figure 2: Real-world LeRobot evaluation. MIRTH improves success rates across manipulation, mechanism operation, scene rearrangement, category reasoning, and recipe-level semantic tasks while maintaining high control throughput.</em></p>
 
 Additional analysis in the paper shows that MIRTH improves temporal grounding on LIBERO-Long, reduces normalized proprioception probing error compared with OpenVLA, and raises LeRobot failure recovery from 5.2% with single-frame OpenVLA to 12.1% with the full MIRTH model.
 
@@ -70,19 +70,16 @@ Additional analysis in the paper shows that MIRTH improves temporal grounding on
 
 | Path | Purpose |
 | --- | --- |
+| [config/](config/) | Robot-platform constants and configuration helpers. |
 | [models/](models/) | MIRTH model, VLA backbone wrappers, temporal memory hubs, reasoning tokens, and action heads. |
-| [finetune_ddp.py](finetune_ddp.py) | Multi-GPU fine-tuning entry point. |
-| [eval_libero.py](eval_libero.py) | LIBERO rollout evaluation script. |
 | [rlds_datasets/](rlds_datasets/) | RLDS / TFDS-style data loading. |
 | [lerobot_datasets/](lerobot_datasets/) | LeRobot-format data loading and conversion support. |
 | [evaluation/](evaluation/) | Action sampling and LIBERO evaluation utilities. |
-
-## Release roadmap
-
-- Code: core training and evaluation code is being organized for public use.
-- Checkpoints: fine-tuned MIRTH checkpoints will be linked once upload and verification are complete.
-- Data: RLDS / TFDS and LeRobot dataset links will be added after packaging.
-- Manuscript: an updated version with cleaned notation will be linked when available.
+| [utils/](utils/) | Shared training, data, metric, and checkpoint utilities. |
+| [finetune_ddp.py](finetune_ddp.py) | Multi-GPU fine-tuning entry point. |
+| [eval_libero.py](eval_libero.py) | LIBERO rollout evaluation script. |
+| [lerobot_to_rlds.py](lerobot_to_rlds.py) | Converter for exporting local LeRobot episodes into an RLDS-compatible dataset layout. |
+| [Test*.py](.) | Smoke-test scripts for model components, datasets, and environment setup. |
 
 ---
 
