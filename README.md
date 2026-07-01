@@ -40,27 +40,86 @@ MIRTH keeps the pretrained VLA backbone largely frozen and adds lightweight trai
 
 <p align="center"><em>Figure 1: Overall MIRTH architecture. Temporal memory hubs summarize historical context, latent reasoning tokens bridge multimodal observations and action trajectories, and parallel action decoding predicts the next action chunk efficiently.</em></p>
 
-| Component | Role |
-| --- | --- |
-| Workspace memory hub | Maintains multi-scale exponential moving averages of historical visual/proprioceptive features for long-horizon context. |
-| Short-horizon memory hub | Attends over the most recent frames to capture motion trends and high-frequency local changes. |
-| Latent reasoning tokens | Create a compact planning bridge between observations, language instructions, and action trajectories. |
-| Parallel action head | Predicts action chunks in a single forward pass instead of generating action dimensions autoregressively. |
+<table align="center">
+  <tr>
+    <th>Component</th>
+    <th>Role</th>
+  </tr>
+  <tr>
+    <td>Workspace memory hub</td>
+    <td>Maintains multi-scale exponential moving averages of historical visual/proprioceptive features for long-horizon context.</td>
+  </tr>
+  <tr>
+    <td>Short-horizon memory hub</td>
+    <td>Attends over the most recent frames to capture motion trends and high-frequency local changes.</td>
+  </tr>
+  <tr>
+    <td>Latent reasoning tokens</td>
+    <td>Create a compact planning bridge between observations, language instructions, and action trajectories.</td>
+  </tr>
+  <tr>
+    <td>Parallel action head</td>
+    <td>Predicts action chunks in a single forward pass instead of generating action dimensions autoregressively.</td>
+  </tr>
+</table>
 
 ## Dataset overview
 
 Beyond the model architecture, MIRTH introduces a real-world LeRobot manipulation dataset collected with synchronized main-camera and wrist-camera observations. The dataset is organized into five levels of increasing semantic and control complexity. Each level contains four different tasks, and each task contains 50 expert demonstration episodes, yielding **1000** episodes in total. Demonstrations are collected under randomized object poses and workspace configurations to support robust imitation learning and evaluation.
 
-| Level | Focus | Tasks | Episodes per task | Episodes |
-| --- | --- | ---: | ---: | ---: |
-| Basic manipulation | Atomic pick-and-place and target placement skills. | 4 | 50 | 200 |
-| Mechanism operation | Drawer opening / closing and object insertion with articulated mechanisms. | 4 | 50 | 200 |
-| Scene rearrangement | Multi-object workspace organization and spatial rearrangement. | 4 | 50 | 200 |
-| Category reasoning | Object grouping by category, color, attribute, or exclusion constraints. | 4 | 50 | 200 |
-| Recipe-level semantic composition | Long-horizon semantic tasks requiring high-level instruction grounding. | 4 | 50 | 200 |
-| **Total** |  | **20** |  | **1000** |
+<table align="center">
+  <tr>
+    <th>Level</th>
+    <th>Focus</th>
+    <th>Tasks</th>
+    <th>Episodes per task</th>
+    <th>Episodes</th>
+  </tr>
+  <tr>
+    <td>Basic manipulation</td>
+    <td>Atomic pick-and-place and target placement skills.</td>
+    <td align="right">4</td>
+    <td align="right">50</td>
+    <td align="right">200</td>
+  </tr>
+  <tr>
+    <td>Mechanism operation</td>
+    <td>Drawer opening / closing and object insertion with articulated mechanisms.</td>
+    <td align="right">4</td>
+    <td align="right">50</td>
+    <td align="right">200</td>
+  </tr>
+  <tr>
+    <td>Scene rearrangement</td>
+    <td>Multi-object workspace organization and spatial rearrangement.</td>
+    <td align="right">4</td>
+    <td align="right">50</td>
+    <td align="right">200</td>
+  </tr>
+  <tr>
+    <td>Category reasoning</td>
+    <td>Object grouping by category, color, attribute, or exclusion constraints.</td>
+    <td align="right">4</td>
+    <td align="right">50</td>
+    <td align="right">200</td>
+  </tr>
+  <tr>
+    <td>Recipe-level semantic composition</td>
+    <td>Long-horizon semantic tasks requiring high-level instruction grounding.</td>
+    <td align="right">4</td>
+    <td align="right">50</td>
+    <td align="right">200</td>
+  </tr>
+  <tr>
+    <td><strong>Total</strong></td>
+    <td></td>
+    <td align="right"><strong>20</strong></td>
+    <td></td>
+    <td align="right"><strong>1000</strong></td>
+  </tr>
+</table>
 
-<table>
+<table align="center">
   <tr>
     <td align="center"><strong>Sample 1: main camera</strong></td>
     <td align="center"><strong>Sample 1: wrist camera</strong></td>
@@ -79,13 +138,56 @@ Beyond the model architecture, MIRTH introduces a real-world LeRobot manipulatio
 
 LIBERO success rates are averaged over 500 episodes with different seeds, following the paper evaluation protocol.
 
-| Method | Spatial | Object | Goal | Long | Average |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| Diffusion Policy | 78.3 +/- 1.1% | 92.5 +/- 0.7% | 68.3 +/- 1.2% | 50.5 +/- 1.3% | 72.4% |
-| Octo | 78.9 +/- 1.0% | 85.7 +/- 0.9% | 84.6 +/- 0.9% | 51.1 +/- 1.3% | 75.1% |
-| OpenVLA | 84.7 +/- 1.4% | 88.4 +/- 0.8% | 79.2 +/- 1.1% | 53.7 +/- 0.7% | 76.5% |
-| OpenVLA-OFT | 97.6 +/- 0.7% | 98.4 +/- 0.4% | 97.9 +/- 0.8% | 94.5 +/- 0.9% | 97.1% |
-| **MIRTH (ours)** | **98.2 +/- 0.6%** | **100.0 +/- 0.4%** | **98.8 +/- 0.5%** | **95.3 +/- 1.1%** | **98.1%** |
+<table align="center">
+  <tr>
+    <th>Method</th>
+    <th>Spatial</th>
+    <th>Object</th>
+    <th>Goal</th>
+    <th>Long</th>
+    <th>Average</th>
+  </tr>
+  <tr>
+    <td>Diffusion Policy</td>
+    <td align="right">78.3 +/- 1.1%</td>
+    <td align="right">92.5 +/- 0.7%</td>
+    <td align="right">68.3 +/- 1.2%</td>
+    <td align="right">50.5 +/- 1.3%</td>
+    <td align="right">72.4%</td>
+  </tr>
+  <tr>
+    <td>Octo</td>
+    <td align="right">78.9 +/- 1.0%</td>
+    <td align="right">85.7 +/- 0.9%</td>
+    <td align="right">84.6 +/- 0.9%</td>
+    <td align="right">51.1 +/- 1.3%</td>
+    <td align="right">75.1%</td>
+  </tr>
+  <tr>
+    <td>OpenVLA</td>
+    <td align="right">84.7 +/- 1.4%</td>
+    <td align="right">88.4 +/- 0.8%</td>
+    <td align="right">79.2 +/- 1.1%</td>
+    <td align="right">53.7 +/- 0.7%</td>
+    <td align="right">76.5%</td>
+  </tr>
+  <tr>
+    <td>OpenVLA-OFT</td>
+    <td align="right">97.6 +/- 0.7%</td>
+    <td align="right">98.4 +/- 0.4%</td>
+    <td align="right">97.9 +/- 0.8%</td>
+    <td align="right">94.5 +/- 0.9%</td>
+    <td align="right">97.1%</td>
+  </tr>
+  <tr>
+    <td><strong>MIRTH (ours)</strong></td>
+    <td align="right"><strong>98.2 +/- 0.6%</strong></td>
+    <td align="right"><strong>100.0 +/- 0.4%</strong></td>
+    <td align="right"><strong>98.8 +/- 0.5%</strong></td>
+    <td align="right"><strong>95.3 +/- 1.1%</strong></td>
+    <td align="right"><strong>98.1%</strong></td>
+  </tr>
+</table>
 
 <p align="center">
   <img src="assets/lerobot_results.png" alt="LeRobot real-world comparison across five task groups and throughput" width="40%">
@@ -97,18 +199,52 @@ Additional analysis in the paper shows that MIRTH improves temporal grounding on
 
 ## Repository contents
 
-| Path | Purpose |
-| --- | --- |
-| [config/](config/) | Robot-platform constants and configuration helpers. |
-| [models/](models/) | MIRTH model, VLA backbone wrappers, temporal memory hubs, reasoning tokens, and action heads. |
-| [rlds_datasets/](rlds_datasets/) | RLDS / TFDS-style data loading. |
-| [lerobot_datasets/](lerobot_datasets/) | LeRobot-format data loading and conversion support. |
-| [evaluation/](evaluation/) | Action sampling and LIBERO evaluation utilities. |
-| [utils/](utils/) | Shared training, data, metric, and checkpoint utilities. |
-| [finetune_ddp.py](finetune_ddp.py) | Multi-GPU fine-tuning entry point. |
-| [eval_libero.py](eval_libero.py) | LIBERO rollout evaluation script. |
-| [lerobot_to_rlds.py](lerobot_to_rlds.py) | Converter for exporting local LeRobot episodes into an RLDS-compatible dataset layout. |
-| [Test*.py](.) | Smoke-test scripts for model components, datasets, and environment setup. |
+<table align="center">
+  <tr>
+    <th>Path</th>
+    <th>Purpose</th>
+  </tr>
+  <tr>
+    <td><a href="config/">config/</a></td>
+    <td>Robot-platform constants and configuration helpers.</td>
+  </tr>
+  <tr>
+    <td><a href="models/">models/</a></td>
+    <td>MIRTH model, VLA backbone wrappers, temporal memory hubs, reasoning tokens, and action heads.</td>
+  </tr>
+  <tr>
+    <td><a href="rlds_datasets/">rlds_datasets/</a></td>
+    <td>RLDS / TFDS-style data loading.</td>
+  </tr>
+  <tr>
+    <td><a href="lerobot_datasets/">lerobot_datasets/</a></td>
+    <td>LeRobot-format data loading and conversion support.</td>
+  </tr>
+  <tr>
+    <td><a href="evaluation/">evaluation/</a></td>
+    <td>Action sampling and LIBERO evaluation utilities.</td>
+  </tr>
+  <tr>
+    <td><a href="utils/">utils/</a></td>
+    <td>Shared training, data, metric, and checkpoint utilities.</td>
+  </tr>
+  <tr>
+    <td><a href="finetune_ddp.py">finetune_ddp.py</a></td>
+    <td>Multi-GPU fine-tuning entry point.</td>
+  </tr>
+  <tr>
+    <td><a href="eval_libero.py">eval_libero.py</a></td>
+    <td>LIBERO rollout evaluation script.</td>
+  </tr>
+  <tr>
+    <td><a href="lerobot_to_rlds.py">lerobot_to_rlds.py</a></td>
+    <td>Converter for exporting local LeRobot episodes into an RLDS-compatible dataset layout.</td>
+  </tr>
+  <tr>
+    <td><a href=".">Test*.py</a></td>
+    <td>Smoke-test scripts for model components, datasets, and environment setup.</td>
+  </tr>
+</table>
 
 ---
 
@@ -177,10 +313,23 @@ Google Drive: https://drive.google.com/drive/folders/12B_y0w7uoEtVVO91aHMqPuNtV2
 
 MIRTH supports two dataset formats:
 
-| Format | Loader | Download link |
-| --- | --- | --- |
-| RLDS / TFDS format | `rlds_datasets.RLDSDataset` | TBD |
-| LeRobot format | `lerobot_datasets.LeRobotOpenVLADataset` | TBD |
+<table align="center">
+  <tr>
+    <th>Format</th>
+    <th>Loader</th>
+    <th>Download link</th>
+  </tr>
+  <tr>
+    <td>RLDS / TFDS format</td>
+    <td><code>rlds_datasets.RLDSDataset</code></td>
+    <td>TBD</td>
+  </tr>
+  <tr>
+    <td>LeRobot format</td>
+    <td><code>lerobot_datasets.LeRobotOpenVLADataset</code></td>
+    <td>TBD</td>
+  </tr>
+</table>
 
 Both loaders adapt samples to the same OpenVLA-style batch contract before collation, so they can share `PaddedCollatorForActionPrediction`.
 
@@ -194,13 +343,32 @@ Before running these scripts, edit their path variables so they point to your re
 
 Run them one by one:
 
-| Script | What it checks |
-| --- | --- |
-| [TestVisionEncoders.py](TestVisionEncoders.py) | Loads the Prism DINO + SigLIP vision backbone and the `InfusedDinoSigLIPViTBackbone` wrapper, runs a dummy forward pass on the GPU. |
-| [TestLLM.py](TestLLM.py) | Loads the pretrained LLaMA-2 backbone via Hugging Face, runs a forward pass on a templated prompt. **Edit `hf_token`** at the top of the file before running. |
-| [TestMemoryHub.py](TestMemoryHub.py) | Builds `VisionMemoryHubForTraining` / `ProprioMemoryHubForTraining` with synthetic inputs end-to-end through the infused vision encoder. |
-| [TestVLA.py](TestVLA.py) | Instantiates the full `MIRTH` model with a synthetic batch; this is the closest single-process proxy for what `finetune_ddp.py` does. |
-| [TestDataset.py](TestDataset.py) | Builds an `RLDSDataset` + `PaddedCollatorForActionPrediction` and iterates a few batches. **Edit `DATA_ROOT_DIR`, `DATASET_NAME`, `HF_TOKEN`** at the top of the file. Use this to confirm your RLDS data is in the expected location and format. |
+<table align="center">
+  <tr>
+    <th>Script</th>
+    <th>What it checks</th>
+  </tr>
+  <tr>
+    <td><a href="TestVisionEncoders.py">TestVisionEncoders.py</a></td>
+    <td>Loads the Prism DINO + SigLIP vision backbone and the <code>InfusedDinoSigLIPViTBackbone</code> wrapper, runs a dummy forward pass on the GPU.</td>
+  </tr>
+  <tr>
+    <td><a href="TestLLM.py">TestLLM.py</a></td>
+    <td>Loads the pretrained LLaMA-2 backbone via Hugging Face, runs a forward pass on a templated prompt. <strong>Edit <code>hf_token</code></strong> at the top of the file before running.</td>
+  </tr>
+  <tr>
+    <td><a href="TestMemoryHub.py">TestMemoryHub.py</a></td>
+    <td>Builds <code>VisionMemoryHubForTraining</code> / <code>ProprioMemoryHubForTraining</code> with synthetic inputs end-to-end through the infused vision encoder.</td>
+  </tr>
+  <tr>
+    <td><a href="TestVLA.py">TestVLA.py</a></td>
+    <td>Instantiates the full <code>MIRTH</code> model with a synthetic batch; this is the closest single-process proxy for what <code>finetune_ddp.py</code> does.</td>
+  </tr>
+  <tr>
+    <td><a href="TestDataset.py">TestDataset.py</a></td>
+    <td>Builds an <code>RLDSDataset</code> + <code>PaddedCollatorForActionPrediction</code> and iterates a few batches. <strong>Edit <code>DATA_ROOT_DIR</code>, <code>DATASET_NAME</code>, <code>HF_TOKEN</code></strong> at the top of the file.</td>
+  </tr>
+</table>
 
 Typical invocation:
 
@@ -222,14 +390,36 @@ If all five pass, your environment is ready for fine-tuning.
 
 All training options live in the `RunConfig` dataclass at the top of [finetune_ddp.py](finetune_ddp.py). Before launching, edit at least the following fields to match your environment:
 
-| Field | Meaning |
-| --- | --- |
-| `pretrained_vla_path` | Path to the pretrained OpenVLA-7B (Prismatic) checkpoint `.pt` file downloaded from [openvla/openvla-7b-prismatic](https://huggingface.co/openvla/openvla-7b-prismatic) |
-| `hf_token` | Path to a file containing your Hugging Face access token |
-| `data_root_dir` | Directory containing the training datasets; use the RLDS / TFDS root for `RLDSDataset`, or the LeRobot root for `LeRobotOpenVLADataset` |
-| `run_dir` | Where logs and checkpoints will be written |
-| `dataset_name` | RLDS mixture name, e.g. `libero_goal_no_noops`, `libero_object_no_noops`, `libero_spatial_no_noops`, `libero_10_no_noops` |
-| `run_id` | A unique identifier for this run (used as the checkpoint subdirectory) |
+<table align="center">
+  <tr>
+    <th>Field</th>
+    <th>Meaning</th>
+  </tr>
+  <tr>
+    <td><code>pretrained_vla_path</code></td>
+    <td>Path to the pretrained OpenVLA-7B (Prismatic) checkpoint <code>.pt</code> file downloaded from <a href="https://huggingface.co/openvla/openvla-7b-prismatic">openvla/openvla-7b-prismatic</a>.</td>
+  </tr>
+  <tr>
+    <td><code>hf_token</code></td>
+    <td>Path to a file containing your Hugging Face access token.</td>
+  </tr>
+  <tr>
+    <td><code>data_root_dir</code></td>
+    <td>Directory containing the training datasets; use the RLDS / TFDS root for <code>RLDSDataset</code>, or the LeRobot root for <code>LeRobotOpenVLADataset</code>.</td>
+  </tr>
+  <tr>
+    <td><code>run_dir</code></td>
+    <td>Where logs and checkpoints will be written.</td>
+  </tr>
+  <tr>
+    <td><code>dataset_name</code></td>
+    <td>RLDS mixture name, e.g. <code>libero_goal_no_noops</code>, <code>libero_object_no_noops</code>, <code>libero_spatial_no_noops</code>, <code>libero_10_no_noops</code>.</td>
+  </tr>
+  <tr>
+    <td><code>run_id</code></td>
+    <td>A unique identifier for this run, used as the checkpoint subdirectory.</td>
+  </tr>
+</table>
 
 Other commonly tuned fields:
 
@@ -264,14 +454,36 @@ After fine-tuning, evaluate your checkpoint with [eval_libero.py](eval_libero.py
 
 `EvalConfig` (top of [eval_libero.py](eval_libero.py#L40-L54)) inherits from `RunConfig`, so most model-side fields are loaded automatically from the saved `run_config.jsonl`. You typically only need to set:
 
-| Field | Meaning |
-| --- | --- |
-| `pretrained_vla_path` | Path to the same base OpenVLA-7B checkpoint used for training |
-| `pretrained_checkpoint_path` | Directory of fine-tuned checkpoints (the `checkpoints/` folder under your `run_dir / run_id`) |
-| `pretrained_checkpoint_step` | The training step of the checkpoint to evaluate |
-| `task_suite_name` | One of `libero_spatial`, `libero_object`, `libero_goal`, `libero_10`, `libero_90` |
-| `device` | GPU index |
-| `num_trials_per_task` | Number of rollouts per task (default `30`) |
+<table align="center">
+  <tr>
+    <th>Field</th>
+    <th>Meaning</th>
+  </tr>
+  <tr>
+    <td><code>pretrained_vla_path</code></td>
+    <td>Path to the same base OpenVLA-7B checkpoint used for training.</td>
+  </tr>
+  <tr>
+    <td><code>pretrained_checkpoint_path</code></td>
+    <td>Directory of fine-tuned checkpoints, the <code>checkpoints/</code> folder under your <code>run_dir / run_id</code>.</td>
+  </tr>
+  <tr>
+    <td><code>pretrained_checkpoint_step</code></td>
+    <td>The training step of the checkpoint to evaluate.</td>
+  </tr>
+  <tr>
+    <td><code>task_suite_name</code></td>
+    <td>One of <code>libero_spatial</code>, <code>libero_object</code>, <code>libero_goal</code>, <code>libero_10</code>, <code>libero_90</code>.</td>
+  </tr>
+  <tr>
+    <td><code>device</code></td>
+    <td>GPU index.</td>
+  </tr>
+  <tr>
+    <td><code>num_trials_per_task</code></td>
+    <td>Number of rollouts per task, default <code>30</code>.</td>
+  </tr>
+</table>
 
 ### 5.2 Run evaluation
 
