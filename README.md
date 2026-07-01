@@ -27,6 +27,7 @@ MIRTH is a Vision-Language-Action (VLA) framework for history-aware robot contro
 - **Temporal memory hubs**: dual-scale workspace and short-horizon hubs compress long-term scene evolution and recent motion dynamics into compact prompts.
 - **Latent reasoning tokens**: learnable reasoning tokens are aligned with both multimodal context and action trajectories through a mutual-information objective.
 - **Parallel action decoding**: vector-wise action prediction replaces scalar-wise autoregressive decoding for higher control throughput.
+- **Real-world LeRobot dataset**: a multi-camera manipulation dataset collected on a physical LeRobot platform, covering basic manipulation, mechanism operation, scene rearrangement, category reasoning, and semantic recipe tasks.
 - **Simulation and real-world validation**: MIRTH is evaluated on LIBERO simulation suites and a physical LeRobot platform with multi-camera observations.
 
 ## Method overview
@@ -45,6 +46,25 @@ MIRTH keeps the pretrained VLA backbone largely frozen and adds lightweight trai
 | Short-horizon memory hub | Attends over the most recent frames to capture motion trends and high-frequency local changes. |
 | Latent reasoning tokens | Create a compact planning bridge between observations, language instructions, and action trajectories. |
 | Parallel action head | Predicts action chunks in a single forward pass instead of generating action dimensions autoregressively. |
+
+## Dataset overview
+
+Beyond the model architecture, MIRTH introduces a real-world LeRobot manipulation dataset collected with synchronized main-camera and wrist-camera observations. The dataset is designed to stress long-horizon control and semantic reasoning, with tasks grouped into basic manipulation, mechanism operation, scene rearrangement, category reasoning, and recipe-level semantic composition. Demonstrations are collected under randomized object poses and workspace configurations to support robust imitation learning and evaluation.
+
+<table>
+  <tr>
+    <td align="center"><strong>Sample 1: main camera</strong></td>
+    <td align="center"><strong>Sample 1: wrist camera</strong></td>
+    <td align="center"><strong>Sample 2: main camera</strong></td>
+    <td align="center"><strong>Sample 2: wrist camera</strong></td>
+  </tr>
+  <tr>
+    <td><video src="assets/m1.mp4" controls muted loop playsinline width="100%"></video></td>
+    <td><video src="assets/w1.mp4" controls muted loop playsinline width="100%"></video></td>
+    <td><video src="assets/m2.mp4" controls muted loop playsinline width="100%"></video></td>
+    <td><video src="assets/w2.mp4" controls muted loop playsinline width="100%"></video></td>
+  </tr>
+</table>
 
 ## Results at a glance
 
