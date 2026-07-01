@@ -320,7 +320,7 @@ We provide the MIRTH dataset through Baidu Disk and Google Drive. The two links 
 - Baidu Disk: [https://pan.baidu.com/s/1d8RFeruwF5124L2t4BFUkg?pwd=7890](https://pan.baidu.com/s/1d8RFeruwF5124L2t4BFUkg?pwd=7890), code: `7890`
 - Google Drive: [https://drive.google.com/drive/folders/12B_y0w7uoEtVVO91aHMqPuNtV2fbYXGs?usp=drive_link](https://drive.google.com/drive/folders/12B_y0w7uoEtVVO91aHMqPuNtV2fbYXGs?usp=drive_link)
 
-MIRTH supports two dataset formats:
+MIRTH dataset supports two dataset formats:
 
 <table align="center">
   <tr>
@@ -432,7 +432,7 @@ All training options live in the `RunConfig` dataclass at the top of [finetune_d
 
 Other commonly tuned fields:
 
-- **Memory hub**: `use_vision_memory_hub`, `use_proprio_memory_hub`, `use_action_memory_hub`, `mb_prefix_type` (`union` / `separate`), `long_memory_scale_number`, `short_memory_length`, and the `tau / beta_min / beta_max / gamma / lmbd / bias` weighting parameters.
+- **Memory hub**: `use_vision_memory_hub`, `use_proprio_memory_hub`, `use_action_memory_hub`, `long_memory_scale_number`, `short_memory_length`, and the `tau / beta_min / beta_max / gamma / lmbd / bias` weighting parameters.
 - **Reason tokens**: `use_reason_token`, `num_reason_token`, `reason_hidden`, `reason_p_drop`, `reason_out_scale`.
 - **Contrastive loss** (optional): `use_contrastive_loss`, `contrastive_tau_ra`, `contrastive_tau_rx`, `lambda_contrastive_ra`, `lambda_contrastive_rx`.
 - **Training schedule**: `global_batch_size`, `per_device_batch_size`, `learning_rate`, `epochs`, `max_steps`, `save_freq`, `lr_scheduler_type`, `warmup_ratio`.
@@ -539,4 +539,4 @@ If MIRTH helps your research, please cite the ACL paper:
 
 ## Contact
 
-For questions about the paper or released resources, contact Hao Sun (`sunhaoxx@fc.ritsumei.ac.jp`, `sunhaoxx@zju.edu.cn`) or Yen-Wei Chen (`chen@is.ritsumei.ac.jp`).
+For questions about the paper or released resources, contact Hao Sun (`sunhaoxx@zju.edu.cn`).
