@@ -10,6 +10,7 @@ import psutil
 import os
 
 
+
 def get_memory_usage():
     """Get current CPU and GPU memory usage in MB."""
     # CPU memory

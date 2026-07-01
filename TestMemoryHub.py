@@ -77,3 +77,4 @@ if __name__ == "__main__":
     test_proprio_memory_hub()
     print("=" * 60)
     print("All memory hub tests passed.")
+
