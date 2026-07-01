@@ -27,7 +27,7 @@ MIRTH is a Vision-Language-Action (VLA) framework for history-aware robot contro
 - **Temporal memory hubs**: dual-scale workspace and short-horizon hubs compress long-term scene evolution and recent motion dynamics into compact prompts.
 - **Latent reasoning tokens**: learnable reasoning tokens are aligned with both multimodal context and action trajectories through a mutual-information objective.
 - **Parallel action decoding**: vector-wise action prediction replaces scalar-wise autoregressive decoding for higher control throughput.
-- **Real-world LeRobot dataset**: a multi-camera manipulation dataset collected on a physical LeRobot platform, covering basic manipulation, mechanism operation, scene rearrangement, category reasoning, and semantic recipe tasks.
+- **MIRTH dataset**: a multi-camera real-world manipulation dataset collected on a physical LeRobot platform, covering basic manipulation, mechanism operation, scene rearrangement, category reasoning, and semantic recipe tasks.
 - **Simulation and real-world validation**: MIRTH is evaluated on LIBERO simulation suites and a physical LeRobot platform with multi-camera observations.
 
 ## Method overview
@@ -65,7 +65,9 @@ MIRTH keeps the pretrained VLA backbone largely frozen and adds lightweight trai
 
 ## Dataset overview
 
-Beyond the model architecture, MIRTH introduces a real-world LeRobot manipulation dataset collected with synchronized main-camera and wrist-camera observations. The dataset is organized into five levels of increasing semantic and control complexity. Each level contains four different tasks, and each task contains 50 expert demonstration episodes, yielding **1000** episodes in total. Demonstrations are collected under randomized object poses and workspace configurations to support robust imitation learning and evaluation.
+Beyond the model architecture, MIRTH introduces the MIRTH dataset, a real-world LeRobot manipulation dataset collected with synchronized main-camera and wrist-camera observations. The MIRTH dataset is organized into five levels of increasing semantic and control complexity. Each level contains four different tasks, and each task contains 50 expert demonstration episodes, yielding **1000** episodes in total. Demonstrations are collected under randomized object poses and workspace configurations to support robust imitation learning and evaluation.
+
+For dataset download links and format notes, please refer to [2. Downloads](#2-downloads).
 
 <table align="center">
   <tr>
@@ -305,11 +307,18 @@ Note that the non-flash path is **noticeably slower (about 0.3x)** and uses more
 
 ## 2. Downloads
 
-Download the pretrained OpenVLA-7B (Prismatic) checkpoint from [openvla/openvla-7b-prismatic](https://huggingface.co/openvla/openvla-7b-prismatic), then set `pretrained_vla_path` / `PRETRAINED_VLA_PATH` to the local `.pt` checkpoint path.
+### 2.1 Foundation model
 
-Baidu Disk: https://pan.baidu.com/s/1d8RFeruwF5124L2t4BFUkg?pwd=7890 Code: 7890
+MIRTH is built on top of OpenVLA, so you must first download the pretrained OpenVLA-7B (Prismatic) foundation model from [openvla/openvla-7b-prismatic](https://huggingface.co/openvla/openvla-7b-prismatic). After downloading, set `pretrained_vla_path` / `PRETRAINED_VLA_PATH` to the local `.pt` checkpoint path in all `Test*.py`, `finetune_ddp.py`, and `eval_libero.py`..
 
-Google Drive: https://drive.google.com/drive/folders/12B_y0w7uoEtVVO91aHMqPuNtV2fbYXGs?usp=drive_link
+### 2.2 Training data
+
+For LIBERO simulation training, download the modified LIBERO RLDS data from [openvla/modified_libero_rlds](https://huggingface.co/datasets/openvla/modified_libero_rlds).
+
+We provide the MIRTH dataset through Baidu Disk and Google Drive. The two links contain the same files:
+
+- Baidu Disk: [https://pan.baidu.com/s/1d8RFeruwF5124L2t4BFUkg?pwd=7890](https://pan.baidu.com/s/1d8RFeruwF5124L2t4BFUkg?pwd=7890), code: `7890`
+- Google Drive: [https://drive.google.com/drive/folders/12B_y0w7uoEtVVO91aHMqPuNtV2fbYXGs?usp=drive_link](https://drive.google.com/drive/folders/12B_y0w7uoEtVVO91aHMqPuNtV2fbYXGs?usp=drive_link)
 
 MIRTH supports two dataset formats:
 
@@ -317,21 +326,21 @@ MIRTH supports two dataset formats:
   <tr>
     <th>Format</th>
     <th>Loader</th>
-    <th>Download link</th>
+    <th>Recommendation</th>
   </tr>
   <tr>
     <td>RLDS / TFDS format</td>
     <td><code>rlds_datasets.RLDSDataset</code></td>
-    <td>TBD</td>
+    <td><strong>Recommended.</strong> Use this format for training and evaluation whenever possible.</td>
   </tr>
   <tr>
     <td>LeRobot format</td>
     <td><code>lerobot_datasets.LeRobotOpenVLADataset</code></td>
-    <td>TBD</td>
+    <td>Provided for compatibility, but the LeRobot dataloader is not guaranteed to be reliable.</td>
   </tr>
 </table>
 
-Both loaders adapt samples to the same OpenVLA-style batch contract before collation, so they can share `PaddedCollatorForActionPrediction`.
+Both formats are included in the MIRTH dataset release. The release also includes the LeRobot calibration file at `calibration/black.json`. Both loaders adapt samples to the same OpenVLA-style batch contract before collation, so they can share `PaddedCollatorForActionPrediction`.
 
 ---
 
