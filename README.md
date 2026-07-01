@@ -18,6 +18,14 @@ Hao Sun, Yu Song, Shiyu Teng, Ziwei Niu, Yen-Wei Chen
 
 MIRTH is a Vision-Language-Action (VLA) framework for history-aware robot control. It augments a pretrained OpenVLA-style backbone with temporal memory hubs, mutual-information-guided latent reasoning tokens, and parallel action decoding to address temporal myopia, reasoning gaps, and autoregressive control latency.
 
+## News
+
+>  We released [**Pi-SimplerVersion**](https://github.com/kiva12138/Pi-SimplerVersion)!: A pure PyTorch implementation of Pi0 and Pi0.5 for researchers, without TensorFlow, JAX, or other heavy framework dependencies.
+
+>  We released [**RLDS_DataLoader**](https://github.com/kiva12138/RLDS_DataLoader)!: A lightweight RLDS dataloader that avoids TensorFlow, dlimp, and version-lock issues, making RLDS-style data easier to use.
+
+>  [**Personal website**](https://kiva12138.github.io)!: Hao Sun's personal website. If you are interested for collabration, refer to this.
+
 > Paper note: the [ACL accepted PDF](https://aclanthology.org/2026.acl-long.1016.pdf) contains some formula-symbol errors. Please refer to the [arXiv version](https://arxiv.org/abs/2606.31167) for the corrected notation. The ACL Anthology page remains the official citation record.
 
 ---
