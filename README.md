@@ -49,7 +49,16 @@ MIRTH keeps the pretrained VLA backbone largely frozen and adds lightweight trai
 
 ## Dataset overview
 
-Beyond the model architecture, MIRTH introduces a real-world LeRobot manipulation dataset collected with synchronized main-camera and wrist-camera observations. The dataset is designed to stress long-horizon control and semantic reasoning, with tasks grouped into basic manipulation, mechanism operation, scene rearrangement, category reasoning, and recipe-level semantic composition. Demonstrations are collected under randomized object poses and workspace configurations to support robust imitation learning and evaluation.
+Beyond the model architecture, MIRTH introduces a real-world LeRobot manipulation dataset collected with synchronized main-camera and wrist-camera observations. The dataset is organized into five levels of increasing semantic and control complexity. Each level contains four different tasks, and each task contains 50 expert demonstration episodes, yielding **1000** episodes in total. Demonstrations are collected under randomized object poses and workspace configurations to support robust imitation learning and evaluation.
+
+| Level | Focus | Tasks | Episodes per task | Episodes |
+| --- | --- | ---: | ---: | ---: |
+| Basic manipulation | Atomic pick-and-place and target placement skills. | 4 | 50 | 200 |
+| Mechanism operation | Drawer opening / closing and object insertion with articulated mechanisms. | 4 | 50 | 200 |
+| Scene rearrangement | Multi-object workspace organization and spatial rearrangement. | 4 | 50 | 200 |
+| Category reasoning | Object grouping by category, color, attribute, or exclusion constraints. | 4 | 50 | 200 |
+| Recipe-level semantic composition | Long-horizon semantic tasks requiring high-level instruction grounding. | 4 | 50 | 200 |
+| **Total** |  | **20** |  | **1000** |
 
 <table>
   <tr>
