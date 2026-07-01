@@ -6,7 +6,8 @@
 
 [![ACL 2026](https://img.shields.io/badge/ACL-2026%20Long%20Paper-2f6f9f)](https://aclanthology.org/2026.acl-long.1016/)
 [![Paper](https://img.shields.io/badge/Paper-ACL%20Anthology-b31b1b)](https://aclanthology.org/2026.acl-long.1016/)
-[![PDF](https://img.shields.io/badge/PDF-download-6b7280)](https://aclanthology.org/2026.acl-long.1016.pdf)
+[![ACL PDF](https://img.shields.io/badge/ACL%20PDF-download-6b7280)](https://aclanthology.org/2026.acl-long.1016.pdf)
+[![arXiv](https://img.shields.io/badge/arXiv-2606.31167-b31b1b)](https://arxiv.org/abs/2606.31167)
 [![Code](https://img.shields.io/badge/Code-GitHub-111827)](https://github.com/kiva12138/MIRTH)
 
 Hao Sun, Yu Song, Shiyu Teng, Ziwei Niu, Yen-Wei Chen
@@ -17,7 +18,7 @@ Hao Sun, Yu Song, Shiyu Teng, Ziwei Niu, Yen-Wei Chen
 
 MIRTH is a Vision-Language-Action (VLA) framework for history-aware robot control. It augments a pretrained OpenVLA-style backbone with temporal memory hubs, mutual-information-guided latent reasoning tokens, and parallel action decoding to address temporal myopia, reasoning gaps, and autoregressive control latency.
 
-> Paper note: the ACL Anthology page is the official citation record. The authors are preparing an updated manuscript with cleaned notation and repetition fixes; this README documents the implementation-facing settings used by the released code.
+> Paper note: the [ACL accepted PDF](https://aclanthology.org/2026.acl-long.1016.pdf) contains some formula-symbol errors. Please refer to the [arXiv version](https://arxiv.org/abs/2606.31167) for the corrected notation. The ACL Anthology page remains the official citation record.
 
 ---
 
@@ -27,6 +28,23 @@ MIRTH is a Vision-Language-Action (VLA) framework for history-aware robot contro
 - **Latent reasoning tokens**: learnable reasoning tokens are aligned with both multimodal context and action trajectories through a mutual-information objective.
 - **Parallel action decoding**: vector-wise action prediction replaces scalar-wise autoregressive decoding for higher control throughput.
 - **Simulation and real-world validation**: MIRTH is evaluated on LIBERO simulation suites and a physical LeRobot platform with multi-camera observations.
+
+## Method overview
+
+MIRTH keeps the pretrained VLA backbone largely frozen and adds lightweight trainable modules around it:
+
+<p align="center">
+  <img src="assets/mirth_architecture.png" alt="Overall MIRTH architecture with temporal hubs, latent reasoning tokens, and parallel action decoding" width="96%">
+</p>
+
+<p align="center"><em>Figure 2: Overall MIRTH architecture. Temporal memory hubs summarize historical context, latent reasoning tokens bridge multimodal observations and action trajectories, and parallel action decoding predicts the next action chunk efficiently.</em></p>
+
+| Component | Role |
+| --- | --- |
+| Workspace memory hub | Maintains multi-scale exponential moving averages of historical visual/proprioceptive features for long-horizon context. |
+| Short-horizon memory hub | Attends over the most recent frames to capture motion trends and high-frequency local changes. |
+| Latent reasoning tokens | Create a compact planning bridge between observations, language instructions, and action trajectories. |
+| Parallel action head | Predicts action chunks in a single forward pass instead of generating action dimensions autoregressively. |
 
 ## Results at a glance
 
@@ -40,18 +58,13 @@ LIBERO success rates are averaged over 500 episodes with different seeds, follow
 | OpenVLA-OFT | 97.6 +/- 0.7% | 98.4 +/- 0.4% | 97.9 +/- 0.8% | 94.5 +/- 0.9% | 97.1% |
 | **MIRTH (ours)** | **98.2 +/- 0.6%** | **100.0 +/- 0.4%** | **98.8 +/- 0.5%** | **95.3 +/- 1.1%** | **98.1%** |
 
+<p align="center">
+  <img src="assets/lerobot_results.png" alt="LeRobot real-world comparison across five task groups and throughput" width="92%">
+</p>
+
+<p align="center"><em>Figure 3: Real-world LeRobot evaluation. MIRTH improves success rates across manipulation, mechanism operation, scene rearrangement, category reasoning, and recipe-level semantic tasks while maintaining high control throughput.</em></p>
+
 Additional analysis in the paper shows that MIRTH improves temporal grounding on LIBERO-Long, reduces normalized proprioception probing error compared with OpenVLA, and raises LeRobot failure recovery from 5.2% with single-frame OpenVLA to 12.1% with the full MIRTH model.
-
-## Method overview
-
-MIRTH keeps the pretrained VLA backbone largely frozen and adds lightweight trainable modules around it:
-
-| Component | Role |
-| --- | --- |
-| Workspace memory hub | Maintains multi-scale exponential moving averages of historical visual/proprioceptive features for long-horizon context. |
-| Short-horizon memory hub | Attends over the most recent frames to capture motion trends and high-frequency local changes. |
-| Latent reasoning tokens | Create a compact planning bridge between observations, language instructions, and action trajectories. |
-| Parallel action head | Predicts action chunks in a single forward pass instead of generating action dimensions autoregressively. |
 
 ## Repository contents
 
