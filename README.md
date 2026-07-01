@@ -129,10 +129,10 @@ For dataset download links and format notes, please refer to [2. Downloads](#2-d
     <td align="center"><strong>Sample 2: wrist camera</strong></td>
   </tr>
   <tr>
-    <td><video src="assets/m1.mp4" controls muted loop playsinline width="100%"></video></td>
-    <td><video src="assets/w1.mp4" controls muted loop playsinline width="100%"></video></td>
-    <td><video src="assets/m2.mp4" controls muted loop playsinline width="100%"></video></td>
-    <td><video src="assets/w2.mp4" controls muted loop playsinline width="100%"></video></td>
+    <td><video src="https://github.com/kiva12138/MIRTH/assets/m1.mp4" controls muted loop playsinline width="100%"></video></td>
+    <td><video src="https://github.com/kiva12138/MIRTH/assets/w1.mp4" controls muted loop playsinline width="100%"></video></td>
+    <td><video src="https://github.com/kiva12138/MIRTH/assets/m2.mp4" controls muted loop playsinline width="100%"></video></td>
+    <td><video src="https://github.com/kiva12138/MIRTH/assets/w2.mp4" controls muted loop playsinline width="100%"></video></td>
   </tr>
 </table>
 
