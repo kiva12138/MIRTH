@@ -24,6 +24,8 @@ MIRTH is a Vision-Language-Action (VLA) framework for history-aware robot contro
 
 >  We released [**RLDS_DataLoader**](https://github.com/kiva12138/RLDS_DataLoader)!: A lightweight RLDS dataloader that avoids TensorFlow, dlimp, and version-lock issues, making RLDS-style data easier to use.
 
+>  The datasets are released on **Huggingface**!: Both [**RLDS**](https://huggingface.co/datasets/Kiva12138/mirth_rlds) and [**LeRobot**](https://huggingface.co/datasets/Kiva12138/mirth_lerobot) dataset formats are provided through Huggingface.
+
 >  [**Personal website**](https://kiva12138.github.io)!: Hao Sun's personal website. If you are interested for collabration, refer to this.
 
 > Paper note: the [ACL accepted PDF](https://aclanthology.org/2026.acl-long.1016.pdf) contains some formula-symbol errors. Please refer to the [arXiv version](https://arxiv.org/abs/2606.31167) for the corrected notation. The ACL Anthology page remains the official citation record.
@@ -325,6 +327,7 @@ For LIBERO simulation training, download the modified LIBERO RLDS data from [ope
 
 We provide the MIRTH dataset through Baidu Disk and Google Drive. The two links contain the same files:
 
+- Huggingface: [https://huggingface.co/datasets/Kiva12138/mirth_lerobot](https://huggingface.co/datasets/Kiva12138/mirth_lerobot) and [https://huggingface.co/datasets/Kiva12138/mirth_rlds](https://huggingface.co/datasets/Kiva12138/mirth_rlds)
 - Baidu Disk: [https://pan.baidu.com/s/1d8RFeruwF5124L2t4BFUkg?pwd=7890](https://pan.baidu.com/s/1d8RFeruwF5124L2t4BFUkg?pwd=7890), code: `7890`
 - Google Drive: [https://drive.google.com/drive/folders/12B_y0w7uoEtVVO91aHMqPuNtV2fbYXGs?usp=drive_link](https://drive.google.com/drive/folders/12B_y0w7uoEtVVO91aHMqPuNtV2fbYXGs?usp=drive_link)
 
